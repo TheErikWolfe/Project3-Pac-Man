@@ -6,19 +6,34 @@ var tilemap = document.getElementById('tilemap');
 var tileSize = 16;
 
 var mapArray = [
-      [11,12,12,12,12,12,12,12,12,12,12,12,12,90,80,12,12,12,12,12,12,12,12,12,12,12,12,13],
+      [11,12,12,12,12,12,12,12,12,12,12,12,12,31,32,12,12,12,12,12,12,12,12,12,12,12,12,13],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
       [18,10,28,10,10,24,10,28,10,10,10,24,10,28,24,10,28,10,10,10,24,10,28,10,10,24,10,14],
       [18,10,27,26,26,25,10,27,26,26,26,25,10,27,25,10,27,26,26,26,25,10,27,26,26,25,10,14],
-      [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
-      [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
-      [17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,15]
+      [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
+      [18,10,21,22,22,23,10,21,23,10,21,22,22,22,22,22,22,23,10,21,23],
+      [18,10,27,26,26,25,10,28,24,10,27,26,26,33,34,26,26,25,10,28,24],
+      [18,10,10,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,28,24],
+      [17,16,16,16,16,37,10,28,35,22,22,23,10,28,24,10,21,22,22,36,24],
+      [10,10,10,10,10,18,10,28,34,26,26,25,10,27,25,10,27,26,26,33,24],
+      [10,10,10,10,10,18,10,28,24,10,10,10,10,10,10,10,10,10,10,28,24],
+      [10,10,10,10,10,18,10,28,24,10,51,52,52,52,52,52,52,53,10,28,24],
+      [12,12,12,12,12,38,10,27,25,10,58,10,10,10,10,10,10,54,10,27,25],
+      [10,10,10,10,10,10,10,10,10,10,58,10,10,10,10,10,10,54,10],
+      [16,16,16,16,16,37,10,21,23,10,58,10,10,10,10,10,10,54,10],
+      [10,10,10,10,10,18,10,28,24,10,57,56,56,56,56,56,56,55,10],
+      [10,10,10,10,10,18,10,28,24,10,10,10,10,10,10,10,10,10,10,10],
+      [10,10,10,10,10,18,10,28,24,10],
+      [11,12,12,12,12,38,10,27,25,10],
+      [18,10,10,10,10,10,10,10,10,10],
+      [18,10],
+      [18,10]
     ];
 //10 = Blank space or Path
-//11-18 outer walls and corners clockwise from top left wall
-//21-28 inner walls and corners from left to right.
-//9-10 left and right T-tops
+//11-18 outer walls and corners clockwise from top left corner
+//21-28 inner walls and corners clockwise from top left corner
+//51-58 ghost box and corners clockwise from top left corner
 
 
 canvas.width = 500;
@@ -264,17 +279,87 @@ function renderMap() {
 
 
 
-            if (mapArray[i][j] === 90) {
+            if (mapArray[i][j] === 31) {
             	//left of T
                 c.drawImage(tilemap,80,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 80) {
+            if (mapArray[i][j] === 32) {
             	//Right of T
                 c.drawImage(tilemap,96,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            
-            
 
+
+            if (mapArray[i][j] === 33) {
+            	//Circle topleft
+                c.drawImage(tilemap,112,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 34) {
+            	//Circle topright
+                c.drawImage(tilemap,96,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 35) {
+            	//Circle bottomleft
+                c.drawImage(tilemap,96,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 36) {
+            	//Circle bottomright
+                c.drawImage(tilemap,112,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+
+
+            if (mapArray[i][j] === 37) {
+            	//weird inner corner? left to down
+                c.drawImage(tilemap,64,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 38) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,64,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            // if (mapArray[i][j] === 37) {
+            // 	//weird inner corner? 
+            //     c.drawImage(tilemap,64,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            // }
+            // if (mapArray[i][j] === 38) {
+            // 	//weird inner corner? up to right
+            //     c.drawImage(tilemap,64,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            // }
+
+
+
+
+
+            if (mapArray[i][j] === 51) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,0,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 52) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,16,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 53) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,32,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 54) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,32,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 55) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,32,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 56) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,16,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 57) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,0,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
+            if (mapArray[i][j] === 58) {
+            	//weird inner corner? up to right
+                c.drawImage(tilemap,0,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
 
         }
     }
