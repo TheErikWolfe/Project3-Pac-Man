@@ -1,9 +1,9 @@
 // comment
 var canvas = document.querySelector('canvas');
 
-
 var tilemap = document.getElementById('tilemap');
-var tileSize = 16;
+
+var tileSize = 10;
 
 var mapArray = [
       [11,12,12,12,12,12,12,12,12,12,12,12,12,90,80,12,12,12,12,12,12,12,12,12,12,12,12,13],
@@ -12,22 +12,30 @@ var mapArray = [
       [18,10,28,10,10,24,10,28,10,10,10,24,10,28,24,10,28,10,10,10,24,10,28,10,10,24,10,14],
       [18,10,27,26,26,25,10,27,26,26,26,25,10,27,25,10,27,26,26,26,25,10,27,26,26,25,10,14],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
-      [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,15]
     ];
+
+canvas.width = mapArray[0].length * tileSize;
+canvas.height = mapArray.length * tileSize;
+
 //10 = Blank space or Path
 //11-18 outer walls and corners clockwise from top left wall
 //21-28 inner walls and corners from left to right.
 //9-10 left and right T-tops
 
-
-canvas.width = 500;
-canvas.height = 700;
-
 var c = canvas.getContext('2d');
 
 // left, up, right, down
 var directions = [false, false, false, false];
+
+//Pacman initial
+pac = new Pacman(tileSize * 1.5, tileSize * 6.5, tileSize / 4, tileSize / 4, tileSize);
+var dir = -10;
+var pctOpen = 100;
+
+// Pacman initial mouth
+var mouthT = 0;
+var mouthB = 2.0;
 
 document.onreadystatechange = function() {
 	if (document.readyState == "interactive") {
@@ -36,8 +44,7 @@ document.onreadystatechange = function() {
 		//window.addEventListener('keyup', buttonReleaseLogic);
 	}
 }
-var mouthT = 0;
-var mouthB = 2.0;
+
 function arrowKeysLogic(){
 	var i = 0;
 	if (event.keyCode == 37) 
@@ -73,13 +80,6 @@ function setDirection(i)
 	directions[i] = [true];
 }
 
-
-
-pac = new Pacman(50,50, 3, 3, 30);
-var dir = -10;
-var pctOpen = 100;
-
-
 function Pacman(x, y, dx, dy, radius)
 {	
 	this.x = x;
@@ -104,13 +104,20 @@ function Pacman(x, y, dx, dy, radius)
 		c.stroke();
 		c.fillStyle = 'yellow';
 		c.fill();
-
-		
 	}
+
 	this.update = function()
 	{
+		// Mouth opening stuff
 		var pad = 0;
 		pctOpen += dir;
+
+		//Wall collision stuff
+		var remainderX = (this.x + this.dx + this.radius) % tileSize;
+		var remainderY = (this.y + this.dy) % tileSize;
+		var tempX = (this.y - (this.y % tileSize)) / tileSize;
+		var tempY = (this.x + this.dx - remainderX) / tileSize;
+
 		if(directions[0] || directions[2])
 		{
 			if(this.x + this.radius + pad > canvas.width)
@@ -121,6 +128,12 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[0] = false;
 			}
+			else if(mapArray[tempY][tempX] != 10)
+			{
+				console.log("Tile " + tempY + ', ' + tempX)
+				directions = [false, false, false, false];
+			}
+
 		}
 		else if( directions[1] || directions[3])
 		{
@@ -133,13 +146,12 @@ function Pacman(x, y, dx, dy, radius)
 				directions[1] = false;
 			}
 		}
+
 		this.move();
 		
 		if (pctOpen % 100 == 0) {
 	      	dir = -dir;
 	    }
-
-		
 
 		this.draw();
 	}
@@ -166,14 +178,12 @@ function Pacman(x, y, dx, dy, radius)
 	}
 }
 
-function animate() {
+function animate() 
+{
 	requestAnimationFrame(animate);
 	c.clearRect(0, 0, canvas.width, canvas.height);
 	pac.update();
 	renderMap();
-
-
-
 }
 
 function renderMap() {
@@ -182,15 +192,7 @@ function renderMap() {
     
             // Check if the value is a 1, represeting a graphic should be drawn.
 			if (mapArray[i][j] === 11) {
-                // Draw a rectangle at i & j position * 20 pixels so that
-                // our 20x20 pixel squares are correctly positioned.
-//                c.fillStyle = '#38008C';
-//                c.fillRect(j * 20, i * 20, 20, 20);
-				//image, dx, dy
-                //c.drawImage(tile1, j * 16, i * 16);
-
                 c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-    //			var tile = new createjs.Bitmap('media/tiles/tile1.png');
             }
             if (mapArray[i][j] === 12) {
             	//top wall
@@ -221,8 +223,6 @@ function renderMap() {
                 c.drawImage(tilemap,0,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
             
-
-
 
 
             if (mapArray[i][j] === 21) {
@@ -260,10 +260,6 @@ function renderMap() {
             
             
             
-
-
-
-
             if (mapArray[i][j] === 90) {
             	//left of T
                 c.drawImage(tilemap,80,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
