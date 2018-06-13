@@ -1,4 +1,4 @@
-# PUT WORDS IN ME!
+# Project 3 - Le Pac-Man
 
 ## Planning
 0. Make planning
@@ -33,5 +33,5 @@
 
 ## TODO 6/12
 1. https://joshondesign.com/p/books/canvasdeepdive/title.html
-2. Look at other canvas refernces/documentation
+2. Look at other canvas references/documentation
 3. Look at map making and collision detection.
