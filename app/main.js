@@ -17,27 +17,35 @@ document.onreadystatechange = function() {
 		//window.addEventListener('keyup', buttonReleaseLogic);
 	}
 }
-
+var mouthT = 0;
+var mouthB = 2.0;
 function arrowKeysLogic(){
 	var i = 0;
 	if (event.keyCode == 37) 
 	{
 		i = 0;
+		mouthT = -1.0;
+		mouthB = 1.0;
 	}
 	else if (event.keyCode == 38) 
 	{
 		i = 1;
+		mouthT = -0.5;
+		mouthB = 1.5;
 	}
 	else if (event.keyCode == 39) 
 	{
 		i = 2;
+		mouthT = 0;
+		mouthB = 2.0;
 	}
 	else if (event.keyCode == 40) 
 	{
 		i = 3;
+		mouthT = .5;
+		mouthB = 2.5;
 	}
 	setDirection(i);
-	console.log(i);
 }
 
 function setDirection(i)
@@ -49,9 +57,12 @@ function setDirection(i)
 
 
 pac = new Pacman(50,50, 3, 3, 30);
+var dir = -10;
+var pctOpen = 100;
+
 
 function Pacman(x, y, dx, dy, radius)
-{
+{	
 	this.x = x;
 	this.y = y;
 	this.radius = radius;
@@ -60,30 +71,27 @@ function Pacman(x, y, dx, dy, radius)
 
 	this.draw = function()
 	{
+		var fltOpen = pctOpen / 100;
+
 		c.beginPath();
-		c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+
+		// Pacman Body and mouth
+		c.arc(this.x, this.y, this.radius, (mouthT + fltOpen * 0.2) * Math.PI, (mouthB - fltOpen * 0.2) * Math.PI);
+		c.lineTo(this.x, this.y);
+    	c.closePath();
+
+    	// Pacman 
 		c.strokeStyle = 'black';
 		c.stroke();
 		c.fillStyle = 'yellow';
 		c.fill();
+
 		
 	}
 	this.update = function()
 	{
-/*		if(this.x + this.radius > canvas.width || this.x - this.radius < 0)
-		{
-			directions = [false, false, false, false];
-		}
-		else if(this.y + this.radius > innerHeight || this.y - this.radius < 0)
-		{
-			directions = [false, false, false, false];
-		}
-		else
-		{
-			this.move();
-		}
-*/
-		var pad = 2.25;
+		var pad = 0;
+		pctOpen += dir;
 		if(directions[0] || directions[2])
 		{
 			if(this.x + this.radius + pad > canvas.width)
@@ -108,9 +116,13 @@ function Pacman(x, y, dx, dy, radius)
 		}
 		this.move();
 		
+		if (pctOpen % 100 == 0) {
+	      	dir = -dir;
+	    }
+
+		
 
 		this.draw();
-		//console.log("Made It: " + this.x );
 	}
 
 	this.move = function()
@@ -144,4 +156,9 @@ function animate() {
 
 }
 
+/*setInterval(function() {
+    c.clearRect(0, 0, canvas.width, canvas.height);
+	pac.update();
+  }, 500);
+*/
 animate();
