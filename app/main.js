@@ -1,6 +1,7 @@
 // comment
 var canvas = document.querySelector('canvas');
 
+// temporary canvas size 
 canvas.width = 300;
 canvas.height = 300;
 
