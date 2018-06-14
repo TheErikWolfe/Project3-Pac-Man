@@ -101,7 +101,7 @@ function arrowKeysLogic(){
 		mouthB = 2.5;
 	}
     queueMove = i;
-	//setDirection(i);
+	setDirection(i);
 }
 
 function setDirection(i)
