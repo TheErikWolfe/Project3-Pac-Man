@@ -1,10 +1,10 @@
 Project 3 - Le Pac-Man
 =======
 
-Download Instructions:
+How to use:
 ------
 
-### Requirements && Dependencies
+### Requirements & Dependencies
 There are no requirements at this time. 
 
 
