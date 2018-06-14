@@ -111,7 +111,7 @@ function setDirection(i)
 	directions[i] = [true];
 }
 
-function pellets() {
+function pelletsInit() {
     for (var i=0; i<mapArray.length; i++) {
         for (var j=0; j<mapArray[0].length; j++) {
             if (mapArray[i][j] == 10) {
@@ -316,7 +316,7 @@ function animate()
 function initialRender()
 {
     renderMap();
-    pellets();
+    pelletsInit();
 }
 
 
