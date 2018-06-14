@@ -53,17 +53,17 @@ canvas.height = mapArray.length * tileSize;
 var c = canvas.getContext('2d');
 
 // left, up, right, down
-var directions = [false, false, false, false];
+var directions = [true, false, false, false];
 var queueMove = 0;
 
 //Pacman initial
-pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 4, tileSize / 4, tileSize/2);
+pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
 var dir = -10;
 var pctOpen = 100;
 
 // Pacman initial mouth
-var mouthT = 0;
-var mouthB = 2.0;
+var mouthT = -1.0;
+var mouthB = 1.0;
 
 document.onreadystatechange = function() {
 	if (document.readyState == "interactive") {
@@ -101,7 +101,7 @@ function arrowKeysLogic(){
 		mouthB = 2.5;
 	}
     queueMove = i;
-	setDirection(i);
+	//setDirection(i);
 }
 
 function setDirection(i)
@@ -159,6 +159,11 @@ function Pacman(x, y, dx, dy, radius)
 		c.fill();
 	}
 
+    this.moveCheck = function()
+    {
+        
+    }
+
 	this.update = function()
 	{
 		// Mouth opening stuff
@@ -170,11 +175,13 @@ function Pacman(x, y, dx, dy, radius)
         
         // console.log(this.nextPos);
         this.move();
+        //queue goes here I think
+        if(this.moveCheck())
+        {
+
+        }
 		if(directions[0] || directions[2])
-		{
-   //          this.nextPos[0] = ((this.x + this.dx + this.radius) - ((this.x + this.dx + this.radius) % tileSize)) / tileSize;
-			// this.nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
-            
+		{ 
             if(this.x + this.radius + pad > canvas.width)
 			{
 				directions[2] = false;
