@@ -90,6 +90,7 @@ var directions = [true, false, false, false];
 var queueMove = 0;
 
 //Pacman initial
+// x, y, dx, dy, radius
 pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
 var dir = -10;
 var pctOpen = 100;
@@ -112,35 +113,36 @@ function arrowKeysLogic(){
 	if (event.keyCode == 37) 
 	{
 		i = 0;
-		mouthT = -1.0;
-		mouthB = 1.0;
+		/*mTop = -1.0;
+		mBot = 1.0;*/
 	}
 	else if (event.keyCode == 38) 
 	{
 		i = 1;
-		mouthT = -0.5;
-		mouthB = 1.5;
+		/*mTop = -0.5;
+		mBot = 1.5;*/
 	}
 	else if (event.keyCode == 39) 
 	{
 		i = 2;
-		mouthT = 0;
-		mouthB = 2.0;
+		/*mTop = 0;
+		mBot = 2.0;*/
 	}
 	else if (event.keyCode == 40) 
 	{
 		i = 3;
-		mouthT = .5;
-		mouthB = 2.5;
+		/*mTop = -1.5;
+		mBot = 0.5;*/
 	}
     queueMove = i;
-	setDirection(i);
 }
 
-function setDirection(i)
+function setDirection(i, mTop, mBot)
 {
 	directions = [false, false, false, false];
 	directions[i] = [true];
+    mouthT = mTop;
+    mouthB = mBot;
 }
 
 function pelletsInit() {
@@ -159,7 +161,7 @@ function pelletsInit() {
     }
 }
 
-function scoreUpdate() {
+/*function scoreUpdate() {
     var pacLocation = [pac.x, pac.y];
     // console.log(map.isPelletAtXY(pac.x, pac.y));
     if (map.isPelletAtXY(pac.x, pac.y)) {
@@ -168,7 +170,7 @@ function scoreUpdate() {
         var col = tileInfo[2];
         map.array[col][row] = 99;
     }
-}
+}*/
 
 function Pacman(x, y, dx, dy, radius)
 {	
@@ -179,9 +181,18 @@ function Pacman(x, y, dx, dy, radius)
 	this.dy = dy;
     // X, Y
     //Pac-Man's current location
-    this.pacPos = [0, 0];
+    this.getNextPos = function(pos, spd, rad)
+    {
+        return ((pos + spd + rad) - ((pos + spd + rad) % tileSize)) / tileSize;
+    }
+    this.getThisPos = function(pos)
+    {
+        return (pos - (pos % tileSize)) / tileSize;
+    }       
 
-    this.nextPos = [0, 0];
+    this.pacPos = [this.getThisPos(this.x), this.getThisPos(this.y)];
+    this.nextPos = [this.getNextPos(this.x, -this.dx, this.radius), this.getThisPos(this.y)];
+
     //Pac-Man's current location
 
 	this.draw = function()
@@ -202,11 +213,6 @@ function Pacman(x, y, dx, dy, radius)
 		c.fill();
 	}
 
-    this.moveCheck = function()
-    {
-        
-    }
-
 	this.update = function()
 	{
 		// Mouth opening stuff
@@ -217,12 +223,18 @@ function Pacman(x, y, dx, dy, radius)
         var oneMoreMove = true;
         
         // console.log(this.nextPos);
-        this.move();
-        //queue goes here I think
-        if(this.moveCheck())
-        {
 
+        //queue goes here I think
+       /* if(this.moveCheck())
+        {
+            setDirection(queueMove);
         }
+        else
+        {
+            this.move();
+        }
+*/
+        
 		if(directions[0] || directions[2])
 		{ 
             if(this.x + this.radius + pad > canvas.width)
@@ -243,7 +255,7 @@ function Pacman(x, y, dx, dy, radius)
                 {
                     directions[2] = false;
                 }
-                this.x = this.pacPos[0] * tileSize + tileSize/2;
+                this.x = this.pacPos[0] * tileSize + this.radius;
 			}
 
 		}
@@ -257,103 +269,157 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[1] = false;
 			}
-            else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10)
+            else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10 )
             {
                 if(directions[1])
                 {
+                    console.log(this.pacPos + ', ' + this.nextPos);
+                    console.log(map.array[this.nextPos[1]][this.nextPos[0]]);
                     directions[1] = false;
+                    console.log(directions);
                 }
                 else if(directions[3])
                 {
                     directions[3] = false;
                 }
-                this.y = this.pacPos[1] * tileSize + tileSize/2;
+                this.y = this.pacPos[1] * tileSize + this.radius;
             }
 
 		}
 
 		
-		
+		this.move();
 		if (pctOpen % 100 == 0) {
 	      	dir = -dir;
 	    }
 
 		this.draw();
+
+        if(queueMove == 0 && this.checkMove(map.array[this.getThisPos(this.y)][this.getNextPos(this.x, 0-this.dx, 0 - this.radius)]))
+        {
+            setDirection(0, -1.0, 1.0);
+        }
+        else if(queueMove == 1 && this.checkMove(map.array[this.getNextPos(this.y, 0-this.dy, 0 - this.radius)][this.getThisPos(this.x)]))
+        {
+            setDirection(1, -0.5, 1.5);
+        }
+        else if(queueMove == 2 && this.checkMove(map.array[this.getThisPos(this.y)][this.getNextPos(this.x, this.dx, this.radius)]))
+        {
+            setDirection(2, 0, 2.0);
+        }
+        else if(queueMove == 3 && this.checkMove(map.array[this.getNextPos(this.y, this.dy, this.radius)][this.getThisPos(this.x)]))
+        {
+            setDirection(3, -1.5, 0.5);
+        }
+
+
+        /*if(queueMove == 0 && this.checkMove(map.array[this.getThisPos(this.y)][this.getNextPos(this.x, 0-this.dx, 0 - this.radius)]))
+        {
+            setDirection(0, -1.0, 1.0);
+        }
+        else if(queueMove == 1 && this.checkMove(map.array[this.getNextPos(this.y, 0-this.dy, 0 - this.radius)][this.getThisPos(this.x)]))
+        {
+            setDirection(1, -0.5, 1.5);
+        }
+        else if(queueMove == 2 && this.checkMove(map.array[this.getThisPos(this.y)][this.getNextPos(this.x, this.dx, this.radius)]))
+        {
+            setDirection(2, 0, 2.0);
+        }
+        else if(queueMove == 3 && this.checkMove(map.array[this.getNextPos(this.y, this.dy, this.radius)][this.getThisPos(this.x)]))
+        {
+            setDirection(3, -1.5, 0.5);
+        }*/
 	}
+
+    this.checkMove = function(ar)
+    {
+        var check = false;
+        if(ar == 10)
+        {
+            check = true;
+        }
+        return check;
+    }
 
 	this.move = function()
 	{
-        this.pacPos[0] = (this.x - (this.x % tileSize)) / tileSize;
-        this.pacPos[1] = (this.y - (this.y % tileSize)) / tileSize;
+        this.pacPos[0] = this.getThisPos(this.x);
+        this.pacPos[1] = this.getThisPos(this.y);
 
 		// left up right down
-		if(directions[0] && map.array[(this.y - (this.y % tileSize))/tileSize][((this.x - this.dx - this.radius) - ((this.x - this.dx + this.radius) % tileSize)) / tileSize] == 10)
+		if(directions[0] && map.array[this.getThisPos(this.y)][this.getNextPos(this.x, -this.dx, -this.radius)] == 10)
 		{
+            this.nextPos[0] = this.getNextPos(this.x, -this.dx, -this.radius);
+            this.nextPos[1] = this.getThisPos(this.y);
+
 			this.x -= this.dx;
-            this.nextPos[0] = ((this.x - this.dx - this.radius) - ((this.x - this.dx - this.radius) % tileSize)) / tileSize;
-            this.nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
-            this.y = this.nextPos[1] * tileSize + tileSize/2;
+            this.y = this.nextPos[1] * tileSize + this.radius;
         }
-		else if(directions[1] && map.array[((this.y - this.dy - this.radius) - ((this.y - this.dy + this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
+		else if(directions[1] && map.array[this.getNextPos(this.y, -this.dy, -this.radius)][this.getThisPos(this.x)] == 10)
 		{
+            this.nextPos[1] = this.getNextPos(this.y, -this.dy, -this.radius);
+            this.nextPos[0] = this.getThisPos(this.x);
+            console.log('nextPos ' + this.nextPos);
+
+            // friendly code possum is friendly
+            //               :     :
+            //         __    |     |    _,_
+            //        (  ~~^-l_____],.-~  /
+            //         \    ")\ "^k. (_,-"
+            //          `>._  ' _ `\  \
+            //       _.-~/'^k. (0)  ` (0
+            //    .-~   {    ~` ~    ..T
+            //   /   .   "-..       _.-'
+            //  /    Y        .   "T
+            // Y     l         ~-./l_
+            // |      \          . .<'
+            // |       `-.._  __,/"r'
+            // l   .-~~"-.    /    I
+            //  Y         Y "~[    |
+            //   \         \_.^--, [
+            //    \            _~> |
+            //     \      ___)--~  |
+            //      ^.       :     l
+            //        ^.   _.j     |
+            //          Y    I     |
+            //          l    l     I
+            //           Y    \    |    
+            //            \    ^.  |
+            //             \     ~-^.
+            //              ^.       ~"--.,_
+            //               |~-._          ~-.
+            //               |    ~Y--.,_      ^.
+            //               :     :     "x      \
+            //                             \      \.
+            //                              \      ]
+            //                               ^._  .^
+            //                                  ~~
+
 			this.y -= this.dy;	
-            this.nextPos[1] = ((this.y - this.dy - this.radius) - ((this.y - this.dy - this.radius) % tileSize)) / tileSize;
-            this.nextPos[0] = (this.x - (this.x % tileSize))/tileSize;
-            this.x = this.nextPos[0] * tileSize + tileSize/2;
+            this.x = this.nextPos[0] * tileSize + this.radius;
+            console.log('y, x, ' + this.y + ', ' + this.x);
 
 		}
-		else if(directions[2] && map.array[(this.y - (this.y % tileSize))/tileSize][((this.x + this.dx - this.radius) - ((this.x + this.dx - this.radius) % tileSize)) / tileSize] == 10)
+		else if(directions[2] && map.array[this.getThisPos(this.y)][this.getNextPos(this.x, this.dx, this.radius)] == 10)
 		{
+            this.nextPos[0] = this.getNextPos(this.x, this.dx, this.radius);
+            this.nextPos[1] = this.getThisPos(this.y);
+
 			this.x += this.dx;
-            this.nextPos[0] = ((this.x + this.dx + this.radius) - ((this.x + this.dx + this.radius) % tileSize)) / tileSize;
-            this.nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
-            this.y = this.nextPos[1] * tileSize + tileSize/2;
+            this.y = this.nextPos[1] * tileSize + this.radius;
         }
-		else if(directions[3] && map.array[((this.y + this.dy - this.radius) - ((this.y + this.dy - this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
+		else if(directions[3] && map.array[this.getNextPos(this.y, this.dy, this.radius)][this.getThisPos(this.x)] == 10)
 		{
-			this.y += this.dy;
-            this.nextPos[1] = ((this.y + this.dy + this.radius) - ((this.y + this.dy + this.radius) % tileSize)) / tileSize;
-            this.nextPos[0] = (this.x - (this.x % tileSize))/tileSize;
-            this.x = this.nextPos[0] * tileSize + tileSize/2;
-		}
-        
+            this.nextPos[1] = this.getNextPos(this.y, this.dy, this.radius);
+            this.nextPos[0] = this.getThisPos(this.x);
 
-        /*if(directions[0] || directions[2])
-        {
-            this.y = this.pacPos[1] * tileSize + tileSize/2
-            if(directions[0])
-            {
-                this.x -= this.dx;
-                this.nextPos[0] = (((this.x - radius) - (this.x - radius) % tileSize) / tileSize)
-                // check next position and set pacman on center of tile.
-                if(map.array[this.nextPos[0]][this.pacPos[1]] != 10)
-                {
-                    this.x = this.pacPos * tileSize/2
-                }
-            }
-            else if(directions[2])
-            {
-                this.x += this.dx;
-            }
-            // This should center Pac-Man on the center of the row
-            
-        }   
-        else if(directions[1] || directions[3])
-        {
-            if(directions[1])
-            {
-                this.y -= this.dy;
-            }
-            else if(directions[3])
-            {
-                this.y += this.dy;
-            }
-            this.x = this.pacPos[0] * tileSize + tileSize/2
-        }*/
-        this.getLocation = function() {
-            return [this.x, this.y];
+            this.y += this.dy;
+            this.x = this.nextPos[0] * tileSize + this.radius;
         }
-	}
+    }
+    this.getLocation = function() {
+        return [this.x, this.y];
+    }
 }
 
 function animate() 
@@ -361,9 +427,9 @@ function animate()
 	requestAnimationFrame(animate);
     //Fixed this by changing the parameters to be pacman specific
     //No longer needs to redraw the whole map.
-	c.clearRect(pac.x-(tileSize/2), pac.y-(tileSize/2), tileSize, tileSize);
+	c.clearRect(pac.x - (tileSize/2), pac.y - (tileSize/2), tileSize, tileSize);
 	pac.update();
-    scoreUpdate();
+    //scoreUpdate();
 
 }
 
@@ -376,6 +442,7 @@ function initialRender()
 
 
 function renderMap() {
+
 	for (var i = 0; i < map.array.length; i++) {
         for (var j = 0; j < map.array[i].length; j++) {
             // if (map.array[i][j] === 10) {
