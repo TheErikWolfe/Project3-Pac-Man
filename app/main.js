@@ -3,7 +3,7 @@ var canvas = document.querySelector('canvas');
 
 var tilemap = document.getElementById('tilemap');
 
-var tileSize = 10;
+var tileSize = 20;
 
 var mapArray = [
       [11,12,12,12,12,12,12,12,12,12,12,12,12,31,32,12,12,12,12,12,12,12,12,12,12,12,12,13],
@@ -53,7 +53,7 @@ var c = canvas.getContext('2d');
 var directions = [false, false, false, false];
 
 //Pacman initial
-pac = new Pacman(13 * tileSize, tileSize * 11, tileSize / 4, tileSize / 4, tileSize);
+pac = new Pacman(1.5 * tileSize, 1.5 * tileSize, tileSize / 5, tileSize / 5, tileSize/2);
 var dir = -10;
 var pctOpen = 100;
 
@@ -114,6 +114,10 @@ function Pacman(x, y, dx, dy, radius)
 	this.radius = radius;
 	this.dx = dx;
 	this.dy = dy;
+    // X, Y
+    var nextPos = [0, 0];
+    oneMoreX = true;
+
 
 	this.draw = function()
 	{
@@ -140,14 +144,16 @@ function Pacman(x, y, dx, dy, radius)
 		pctOpen += dir;
 
 		//Wall collision stuff
-		var remainderX = (this.x + this.dx + this.radius) % tileSize;
-		var remainderY = (this.y + this.dy + this.radius) % tileSize;
-		var tempY = (this.y + this.dy - remainderY) / tileSize;
-		var tempX = (this.x + this.dx - remainderX) / tileSize;
-
+        
+        
+        console.log(nextPos);
+        this.move();
 		if(directions[0] || directions[2])
 		{
-			if(this.x + this.radius + pad > canvas.width)
+   //          nextPos[0] = ((this.x + this.dx + this.radius) - ((this.x + this.dx + this.radius) % tileSize)) / tileSize;
+			// nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
+            
+            if(this.x + this.radius + pad > canvas.width)
 			{
 				directions[2] = false;
 			}
@@ -155,9 +161,9 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[0] = false;
 			}
-			else if(mapArray[tempY][tempX] != 10)
+			else if(mapArray[nextPos[1]][nextPos[0]] != 10)
 			{
-				if(directions[0])
+                if(directions[0])
                 {
                     directions[0] = false;
                 }
@@ -178,14 +184,21 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[1] = false;
 			}
-            else if(mapArray[tempY][tempX] != 10)
+            else if(mapArray[nextPos[1]][nextPos[0]] != 10)
             {
-                //cconsole.log("Tile " + tempY + ', ' + tempX)
-                directions = [false, false, false, false];
+                if(directions[1])
+                {
+                    directions[1] = false;
+                }
+                else if(directions[3])
+                {
+                    directions[3] = false;
+                }
             }
+
 		}
 
-		this.move();
+		
 		
 		if (pctOpen % 100 == 0) {
 	      	dir = -dir;
@@ -197,21 +210,33 @@ function Pacman(x, y, dx, dy, radius)
 	this.move = function()
 	{
 		// left up right down
-		if(directions[0])
+		if(directions[0] && mapArray[(this.y - (this.y % tileSize))/tileSize][((this.x - this.dx - this.radius) - ((this.x - this.dx - this.radius) % tileSize)) / tileSize] == 10)
 		{
 			this.x -= this.dx;
-		}
-		else if(directions[1])
+            nextPos[0] = ((this.x - this.dx - this.radius) - ((this.x - this.dx - this.radius) % tileSize)) / tileSize;
+            nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
+            console.log('Directions 0 nextPos' + nextPos);
+        }
+		else if(directions[1] && mapArray[((this.y - this.dy - this.radius) - ((this.y - this.dy - this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
 		{
-			this.y -= this.dy;		
+			this.y -= this.dy;	
+            nextPos[1] = ((this.y - this.dy - this.radius) - ((this.y - this.dy - this.radius) % tileSize)) / tileSize;
+            nextPos[0] = (this.x - (this.x % tileSize))/tileSize;
+
 		}
-		else if(directions[2])
+		else if(directions[2] && mapArray[(this.y - (this.y % tileSize))/tileSize][((this.x + this.dx + this.radius) - ((this.x + this.dx + this.radius) % tileSize)) / tileSize] == 10)
 		{
 			this.x += this.dx;
-		}
-		else if(directions[3])
+            nextPos[0] = ((this.x + this.dx + this.radius) - ((this.x + this.dx + this.radius) % tileSize)) / tileSize;
+            nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
+            console.log('Directions 2 nextPos' + nextPos);
+        }
+		else if(directions[3] && mapArray[((this.y + this.dy + this.radius) - ((this.y + this.dy + this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
 		{
 			this.y += this.dy;
+            nextPos[1] = ((this.y + this.dy + this.radius) - ((this.y + this.dy + this.radius) % tileSize)) / tileSize;
+            nextPos[0] = (this.x - (this.x % tileSize))/tileSize;
+
 		}
 	}
 }
@@ -224,10 +249,20 @@ function animate()
 	renderMap();
 }
 
+
+
 function renderMap() {
 	for (var i = 0; i < mapArray.length; i++) {
         for (var j = 0; j < mapArray[i].length; j++) {
-    
+            /*if (mapArray[i][j] === 10) {
+                c.rect(j*tileSize, i*tileSize, tileSize, tileSize);
+                c.fillStyle = 'red';
+                c.fill();
+                c.stroke();
+            }*/
+            if (mapArray[i][j] === 11) {
+                c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+            }
             // Check if the value is a 1, represeting a graphic should be drawn.
 			if (mapArray[i][j] === 11) {
                 c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
