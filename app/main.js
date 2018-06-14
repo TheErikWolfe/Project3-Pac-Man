@@ -7,7 +7,11 @@ var tileSize = 20;
 
 var pelletsLeft = 0;
 
-var mapArray = [
+var map = {
+
+    cols: 28,
+    rows: 31,
+    array: [
       [11,12,12,12,12,12,12,12,12,12,12,12,12,31,32,12,12,12,12,12,12,12,12,12,12,12,12,13],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
@@ -39,10 +43,39 @@ var mapArray = [
       [18,10,27,26,26,26,26,26,26,26,26,25,10,27,25,10,27,26,26,26,26,26,26,26,26,25,10,14],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,15]
-    ];
+    ],
 
-canvas.width = mapArray[0].length * tileSize;
-canvas.height = mapArray.length * tileSize;
+    getTileId: function (col, row) {
+        //return an array [TileID, col, row]
+        return (this.array[row][col]);
+    },
+
+    getTileAtXY: function(x, y) {
+        var col = Math.floor(x/tileSize);
+        var row = Math.floor(y/tileSize);
+        var tile = this.getTileId(col, row);
+        return ([tile, row, col]);
+    },
+
+    isSolidTileAtXY: function (x, y) {
+        var col = Math.floor(x/tileSize);
+        var row = Math.floor(y/tileSize);
+        var tile = this.getTileId(col, row);
+        var isSolid = tile != 10 && tile != 99;
+        return isSolid;
+    },
+
+    isPelletAtXY: function (x, y) {
+        var col = Math.floor(x/tileSize);
+        var row = Math.floor(y/tileSize);
+        var tile = this.getTileId(col, row);
+        var isPellet = tile == 10;
+        return isPellet;
+    }
+}
+
+canvas.width = map.array[0].length * tileSize;
+canvas.height = map.array.length * tileSize;
 
 //10 = Blank space or Path with pellets
 //11-18 outer walls and corners clockwise from top left corner
@@ -101,7 +134,7 @@ function arrowKeysLogic(){
 		mouthB = 2.5;
 	}
     queueMove = i;
-	//setDirection(i);
+	setDirection(i);
 }
 
 function setDirection(i)
@@ -110,10 +143,10 @@ function setDirection(i)
 	directions[i] = [true];
 }
 
-function pellets() {
-    for (var i=0; i<mapArray.length; i++) {
-        for (var j=0; j<mapArray[0].length; j++) {
-            if (mapArray[i][j] == 10) {
+function pelletsInit() {
+    for (var i=0; i<map.array.length; i++) {
+        for (var j=0; j<map.array[0].length; j++) {
+            if (map.array[i][j] == 10) {
                 //pelletsLeft used later for win condition and 
                 //scoring
                 pelletsLeft++; 
@@ -124,7 +157,17 @@ function pellets() {
             }
         }
     }
-    // console.log('Pellets Left =', pelletsLeft);
+}
+
+function scoreUpdate() {
+    var pacLocation = [pac.x, pac.y];
+    // console.log(map.isPelletAtXY(pac.x, pac.y));
+    if (map.isPelletAtXY(pac.x, pac.y)) {
+        var tileInfo = map.getTileAtXY(pac.x, pac.y);
+        var row = tileInfo[1];
+        var col = tileInfo[2];
+        map.array[col][row] = 99;
+    }
 }
 
 function Pacman(x, y, dx, dy, radius)
@@ -190,7 +233,7 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[0] = false;
 			}
-			else if(mapArray[this.nextPos[1]][this.nextPos[0]] != 10)
+			else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10)
 			{
                 if(directions[0])
                 {
@@ -214,7 +257,7 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[1] = false;
 			}
-            else if(mapArray[this.nextPos[1]][this.nextPos[0]] != 10)
+            else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10)
             {
                 if(directions[1])
                 {
@@ -244,14 +287,14 @@ function Pacman(x, y, dx, dy, radius)
         this.pacPos[1] = (this.y - (this.y % tileSize)) / tileSize;
 
 		// left up right down
-		if(directions[0] && mapArray[(this.y - (this.y % tileSize))/tileSize][((this.x - this.dx - this.radius) - ((this.x - this.dx + this.radius) % tileSize)) / tileSize] == 10)
+		if(directions[0] && map.array[(this.y - (this.y % tileSize))/tileSize][((this.x - this.dx - this.radius) - ((this.x - this.dx + this.radius) % tileSize)) / tileSize] == 10)
 		{
 			this.x -= this.dx;
             this.nextPos[0] = ((this.x - this.dx - this.radius) - ((this.x - this.dx - this.radius) % tileSize)) / tileSize;
             this.nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
             this.y = this.nextPos[1] * tileSize + tileSize/2;
         }
-		else if(directions[1] && mapArray[((this.y - this.dy - this.radius) - ((this.y - this.dy + this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
+		else if(directions[1] && map.array[((this.y - this.dy - this.radius) - ((this.y - this.dy + this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
 		{
 			this.y -= this.dy;	
             this.nextPos[1] = ((this.y - this.dy - this.radius) - ((this.y - this.dy - this.radius) % tileSize)) / tileSize;
@@ -259,14 +302,14 @@ function Pacman(x, y, dx, dy, radius)
             this.x = this.nextPos[0] * tileSize + tileSize/2;
 
 		}
-		else if(directions[2] && mapArray[(this.y - (this.y % tileSize))/tileSize][((this.x + this.dx - this.radius) - ((this.x + this.dx - this.radius) % tileSize)) / tileSize] == 10)
+		else if(directions[2] && map.array[(this.y - (this.y % tileSize))/tileSize][((this.x + this.dx - this.radius) - ((this.x + this.dx - this.radius) % tileSize)) / tileSize] == 10)
 		{
 			this.x += this.dx;
             this.nextPos[0] = ((this.x + this.dx + this.radius) - ((this.x + this.dx + this.radius) % tileSize)) / tileSize;
             this.nextPos[1] = (this.y - (this.y % tileSize))/tileSize;
             this.y = this.nextPos[1] * tileSize + tileSize/2;
         }
-		else if(directions[3] && mapArray[((this.y + this.dy - this.radius) - ((this.y + this.dy - this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
+		else if(directions[3] && map.array[((this.y + this.dy - this.radius) - ((this.y + this.dy - this.radius) % tileSize)) / tileSize][(this.x - (this.x % tileSize))/tileSize] == 10)
 		{
 			this.y += this.dy;
             this.nextPos[1] = ((this.y + this.dy + this.radius) - ((this.y + this.dy + this.radius) % tileSize)) / tileSize;
@@ -283,7 +326,7 @@ function Pacman(x, y, dx, dy, radius)
                 this.x -= this.dx;
                 this.nextPos[0] = (((this.x - radius) - (this.x - radius) % tileSize) / tileSize)
                 // check next position and set pacman on center of tile.
-                if(mapArray[this.nextPos[0]][this.pacPos[1]] != 10)
+                if(map.array[this.nextPos[0]][this.pacPos[1]] != 10)
                 {
                     this.x = this.pacPos * tileSize/2
                 }
@@ -307,6 +350,9 @@ function Pacman(x, y, dx, dy, radius)
             }
             this.x = this.pacPos[0] * tileSize + tileSize/2
         }*/
+        this.getLocation = function() {
+            return [this.x, this.y];
+        }
 	}
 }
 
@@ -317,6 +363,7 @@ function animate()
     //No longer needs to redraw the whole map.
 	c.clearRect(pac.x-(tileSize/2), pac.y-(tileSize/2), tileSize, tileSize);
 	pac.update();
+    scoreUpdate();
 
 }
 
@@ -324,121 +371,119 @@ function animate()
 function initialRender()
 {
     renderMap();
-    pellets();
+    pelletsInit();
 }
 
 
 function renderMap() {
-	for (var i = 0; i < mapArray.length; i++) {
-        for (var j = 0; j < mapArray[i].length; j++) {
-            // if (mapArray[i][j] === 10) {
+	for (var i = 0; i < map.array.length; i++) {
+        for (var j = 0; j < map.array[i].length; j++) {
+            // if (map.array[i][j] === 10) {
             //     c.rect(j*tileSize, i*tileSize, tileSize, tileSize);
             //     c.fillStyle = 'red';
             //     c.fill();
             //     c.stroke();
             // }
-            if (mapArray[i][j] === 11) {
-                c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
             // Check if the value is a 1, represeting a graphic should be drawn.
-			if (mapArray[i][j] === 11) {
+			if (map.array[i][j] === 11) {
                 c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+                //var tile = tilemap.getTile(column,row);
             }
-            if (mapArray[i][j] === 12) {
+            if (map.array[i][j] === 12) {
             	//top wall
                 c.drawImage(tilemap,16,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 13) {
+            if (map.array[i][j] === 13) {
             	//topright corner
                 c.drawImage(tilemap,32,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 14) {
+            if (map.array[i][j] === 14) {
             	//right wall
                 c.drawImage(tilemap,32,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 15) {
+            if (map.array[i][j] === 15) {
             	//bottomrightcorner
                 c.drawImage(tilemap,32,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 16) {
+            if (map.array[i][j] === 16) {
             	//bottom wall
                 c.drawImage(tilemap,16,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 17) {
+            if (map.array[i][j] === 17) {
             	//bottom leftcorner
                 c.drawImage(tilemap,0,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 18) {
+            if (map.array[i][j] === 18) {
             	//left wall
                 c.drawImage(tilemap,0,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
             
 
 
-            if (mapArray[i][j] === 21) {
+            if (map.array[i][j] === 21) {
             	//top left corner innerwall
                 c.drawImage(tilemap,48,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 22) {
+            if (map.array[i][j] === 22) {
             	//innerwall top
                 c.drawImage(tilemap,64,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 23) {
+            if (map.array[i][j] === 23) {
             	//innerwall topright corner
                 c.drawImage(tilemap,144,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 24) {
+            if (map.array[i][j] === 24) {
             	//innerwall right wall
                 c.drawImage(tilemap,144,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 25) {
+            if (map.array[i][j] === 25) {
             	//innerwall bottom right corner
                 c.drawImage(tilemap,144,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 26) {
+            if (map.array[i][j] === 26) {
             	//innerwall bottom wall
                 c.drawImage(tilemap,64,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 27) {
+            if (map.array[i][j] === 27) {
             	//innerwall bottom left corner
                 c.drawImage(tilemap,48,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 28) {
+            if (map.array[i][j] === 28) {
             	//innerwall left wall
                 c.drawImage(tilemap,128,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
             
             
 
-            if (mapArray[i][j] === 31) {
+            if (map.array[i][j] === 31) {
             	//left of T -top
                 c.drawImage(tilemap,80,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 32) {
+            if (map.array[i][j] === 32) {
             	//Right of T -top
                 c.drawImage(tilemap,96,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 41) {
+            if (map.array[i][j] === 41) {
             	//Left of T -upside down
                 c.drawImage(tilemap,80,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 42) {
+            if (map.array[i][j] === 42) {
             	//Right of T -upside down
                 c.drawImage(tilemap,96,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 43) {
+            if (map.array[i][j] === 43) {
             	//Circle / left and right walls/ topleft
                 c.drawImage(tilemap,112,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 44) {
+            if (map.array[i][j] === 44) {
             	//Circle / left and right walls/ bottomleft
                 c.drawImage(tilemap,112,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 45) {
+            if (map.array[i][j] === 45) {
             	//Circle / left and right walls/ topright
                 c.drawImage(tilemap,128,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 46) {
+            if (map.array[i][j] === 46) {
             	//Circle / left and right walls/ bottomright
                 c.drawImage(tilemap,128,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
@@ -446,37 +491,37 @@ function renderMap() {
 
 
 
-            if (mapArray[i][j] === 33) {
+            if (map.array[i][j] === 33) {
             	//Circle topleft
                 c.drawImage(tilemap,112,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 34) {
+            if (map.array[i][j] === 34) {
             	//Circle topright
                 c.drawImage(tilemap,96,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 35) {
+            if (map.array[i][j] === 35) {
             	//Circle bottomleft
                 c.drawImage(tilemap,96,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 36) {
+            if (map.array[i][j] === 36) {
             	//Circle bottomright
                 c.drawImage(tilemap,112,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
 
 
-            if (mapArray[i][j] === 37) {
+            if (map.array[i][j] === 37) {
             	//point/rounded corner top right
                 c.drawImage(tilemap,64,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 38) {
+            if (map.array[i][j] === 38) {
             	//point/rounded corner bottom right
                 c.drawImage(tilemap,64,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 39) {
+            if (map.array[i][j] === 39) {
             	//point/rounded corner top left
                 c.drawImage(tilemap,48,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-             if (mapArray[i][j] === 40) {
+             if (map.array[i][j] === 40) {
             	//point/rounded corner bottom left
                 c.drawImage(tilemap,48,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
@@ -485,35 +530,35 @@ function renderMap() {
 
 
 
-            if (mapArray[i][j] === 51) {
+            if (map.array[i][j] === 51) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,0,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 52) {
+            if (map.array[i][j] === 52) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,16,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 53) {
+            if (map.array[i][j] === 53) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,32,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 54) {
+            if (map.array[i][j] === 54) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,32,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 55) {
+            if (map.array[i][j] === 55) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,32,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 56) {
+            if (map.array[i][j] === 56) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,16,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 57) {
+            if (map.array[i][j] === 57) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,0,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
-            if (mapArray[i][j] === 58) {
+            if (map.array[i][j] === 58) {
             	//weird inner corner? up to right
                 c.drawImage(tilemap,0,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
