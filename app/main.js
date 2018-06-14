@@ -5,26 +5,28 @@ var tilemap = document.getElementById('tilemap');
 
 var tileSize = 13;
 
+var pelletsLeft = 0;
+
 var mapArray = [
       [11,12,12,12,12,12,12,12,12,12,12,12,12,31,32,12,12,12,12,12,12,12,12,12,12,12,12,13],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
-      [18,10,28,10,10,24,10,28,10,10,10,24,10,28,24,10,28,10,10,10,24,10,28,10,10,24,10,14],
+      [18,10,28,99,99,24,10,28,99,99,99,24,10,28,24,10,28,99,99,99,24,10,28,99,99,24,10,14],
       [18,10,27,26,26,25,10,27,26,26,26,25,10,27,25,10,27,26,26,26,25,10,27,26,26,25,10,14],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [18,10,21,22,22,23,10,21,23,10,21,22,22,22,22,22,22,23,10,21,23,10,21,22,22,23,10,14],
       [18,10,27,26,26,25,10,28,24,10,27,26,26,33,34,26,26,25,10,28,24,10,27,26,26,25,10,14],
       [18,10,10,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,10,10,14],
       [17,16,16,16,16,37,10,28,35,22,22,23,10,28,24,10,21,22,22,36,24,10,39,16,16,16,16,15],
-      [10,10,10,10,10,18,10,28,34,26,26,25,10,27,25,10,27,26,26,33,24,10,14,10,10,10,10,10],
-      [10,10,10,10,10,18,10,28,24,10,10,10,10,10,10,10,10,10,10,28,24,10,14,10,10,10,10,10],
-      [10,10,10,10,10,18,10,28,24,10,51,52,52,52,52,52,52,53,10,28,24,10,14,10,10,10,10,10],
-      [12,12,12,12,12,38,10,27,25,10,58,10,10,10,10,10,10,54,10,27,25,10,40,12,12,12,12,12],
-      [10,10,10,10,10,10,10,10,10,10,58,10,10,10,10,10,10,54,10,10,10,10,10,10,10,10,10,10],
-      [16,16,16,16,16,37,10,21,23,10,58,10,10,10,10,10,10,54,10,21,23,10,39,16,16,16,16,16],
-      [10,10,10,10,10,18,10,28,24,10,57,56,56,56,56,56,56,55,10,28,24,10,14,10,10,10,10,10],
-      [10,10,10,10,10,18,10,28,24,10,10,10,10,10,10,10,10,10,10,28,24,10,14,10,10,10,10,10],
-      [10,10,10,10,10,18,10,28,24,10,21,22,22,22,22,22,22,23,10,28,24,10,14,10,10,10,10,10],
+      [99,99,99,99,99,18,10,28,34,26,26,25,10,27,25,10,27,26,26,33,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,10,10,10,10,10,10,10,10,10,10,28,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,10,51,52,52,52,52,52,52,53,10,28,24,10,14,99,99,99,99,99],
+      [12,12,12,12,12,38,10,27,25,10,58,99,99,99,99,99,99,54,10,27,25,10,40,12,12,12,12,12],
+      [10,10,10,10,10,10,10,10,10,10,58,99,99,99,99,99,99,54,10,10,10,10,10,10,10,10,10,10],
+      [16,16,16,16,16,37,10,21,23,10,58,99,99,99,99,99,99,54,10,21,23,10,39,16,16,16,16,16],
+      [99,99,99,99,99,18,10,28,24,10,57,56,56,56,56,56,56,55,10,28,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,10,10,10,10,10,10,10,10,10,10,28,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,10,21,22,22,22,22,22,22,23,10,28,24,10,14,99,99,99,99,99],
       [11,12,12,12,12,38,10,27,25,10,27,26,26,33,34,26,26,25,10,27,25,10,40,12,12,12,12,13],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
@@ -42,10 +44,11 @@ var mapArray = [
 canvas.width = mapArray[0].length * tileSize;
 canvas.height = mapArray.length * tileSize;
 
-//10 = Blank space or Path
+//10 = Blank space or Path with pellets
 //11-18 outer walls and corners clockwise from top left corner
 //21-28 inner walls and corners clockwise from top left corner
 //51-58 ghost box and corners clockwise from top left corner
+//99 = blackspace
 
 var c = canvas.getContext('2d');
 
@@ -61,6 +64,8 @@ var pctOpen = 100;
 var mouthT = 0;
 var mouthB = 2.0;
 
+//Pac-Man's current location
+var pacLoc = [0, 0];
 
 
 document.onreadystatechange = function() {
@@ -106,6 +111,23 @@ function setDirection(i)
 	directions[i] = [true];
 }
 
+function pellets() {
+    for (var i=0; i<mapArray.length; i++) {
+        for (var j=0; j<mapArray[0].length; j++) {
+            if (mapArray[i][j] == 10) {
+                //pelletsLeft used later for win condition and 
+                //scoring
+                pelletsLeft++; 
+                c.rect(j*tileSize+(tileSize/2.6), i*tileSize+(tileSize/2.6), tileSize/4, tileSize/4);
+                c.fillStyle = 'yellow';
+                c.fill();
+                c.stroke();
+            }
+        }
+    }
+    // console.log('Pellets Left =', pelletsLeft);
+}
+
 function Pacman(x, y, dx, dy, radius)
 {	
 	this.x = x;
@@ -117,8 +139,6 @@ function Pacman(x, y, dx, dy, radius)
     var nextPos = [0, 0];
     oneMoreX = true;
     //Pac-Man's current location
-    var pacLoc = [0, 0];
-
 
 	this.draw = function()
 	{
@@ -147,7 +167,7 @@ function Pacman(x, y, dx, dy, radius)
 		//Wall collision stuff
         var oneMoreMove = true;
         
-        console.log(nextPos);
+        // console.log(nextPos);
         this.move();
 		if(directions[0] || directions[2])
 		{
@@ -285,22 +305,30 @@ function Pacman(x, y, dx, dy, radius)
 function animate() 
 {
 	requestAnimationFrame(animate);
-	c.clearRect(0, 0, canvas.width, canvas.height);
+    //Fixed this by changing the parameters to be pacman specific
+    //No longer needs to redraw the whole map.
+	c.clearRect(pac.x-(tileSize/2), pac.y-(tileSize/2), tileSize, tileSize);
 	pac.update();
-	renderMap();
+
 }
 
+
+function initialRender()
+{
+    renderMap();
+    pellets();
+}
 
 
 function renderMap() {
 	for (var i = 0; i < mapArray.length; i++) {
         for (var j = 0; j < mapArray[i].length; j++) {
-            /*if (mapArray[i][j] === 10) {
-                c.rect(j*tileSize, i*tileSize, tileSize, tileSize);
-                c.fillStyle = 'red';
-                c.fill();
-                c.stroke();
-            }*/
+            // if (mapArray[i][j] === 10) {
+            //     c.rect(j*tileSize, i*tileSize, tileSize, tileSize);
+            //     c.fillStyle = 'red';
+            //     c.fill();
+            //     c.stroke();
+            // }
             if (mapArray[i][j] === 11) {
                 c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
             }
@@ -486,10 +514,6 @@ function renderMap() {
     }
 }
 
-/*setInterval(function() {
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    pac.update();
-    renderMap();
-  }, 500);
-*/
+
+initialRender();
 animate();
