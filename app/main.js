@@ -45,13 +45,16 @@ var c = canvas.getContext('2d');
 var directions = [false, false, false, false];
 
 //Pacman initial
-pac = new Pacman(tileSize * 1.5, tileSize * 6.5, tileSize / 4, tileSize / 4, tileSize);
+pac = new Pacman(13 * tileSize, tileSize * 11, tileSize / 4, tileSize / 4, tileSize);
 var dir = -10;
 var pctOpen = 100;
 
 // Pacman initial mouth
 var mouthT = 0;
 var mouthB = 2.0;
+
+//Pac-Man's current location
+var pacLoc = [0, 0];
 
 document.onreadystatechange = function() {
 	if (document.readyState == "interactive") {
@@ -130,9 +133,9 @@ function Pacman(x, y, dx, dy, radius)
 
 		//Wall collision stuff
 		var remainderX = (this.x + this.dx + this.radius) % tileSize;
-		var remainderY = (this.y + this.dy) % tileSize;
-		var tempX = (this.y - (this.y % tileSize)) / tileSize;
-		var tempY = (this.x + this.dx - remainderX) / tileSize;
+		var remainderY = (this.y + this.dy + this.radius) % tileSize;
+		var tempY = (this.y + this.dy - remainderY) / tileSize;
+		var tempX = (this.x + this.dx - remainderX) / tileSize;
 
 		if(directions[0] || directions[2])
 		{
@@ -146,8 +149,14 @@ function Pacman(x, y, dx, dy, radius)
 			}
 			else if(mapArray[tempY][tempX] != 10)
 			{
-				console.log("Tile " + tempY + ', ' + tempX)
-				directions = [false, false, false, false];
+				if(directions[0])
+                {
+                    directions[0] = false;
+                }
+                else if(directions[2])
+                {
+                    directions[2] = false;
+                }
 			}
 
 		}
@@ -161,6 +170,11 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[1] = false;
 			}
+            else if(mapArray[tempY][tempX] != 10)
+            {
+                //cconsole.log("Tile " + tempY + ', ' + tempX)
+                directions = [false, false, false, false];
+            }
 		}
 
 		this.move();
@@ -364,7 +378,8 @@ function renderMap() {
 
 /*setInterval(function() {
     c.clearRect(0, 0, canvas.width, canvas.height);
-	pac.update();
+    pac.update();
+    renderMap();
   }, 500);
 */
 animate();
