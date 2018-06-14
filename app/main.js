@@ -56,7 +56,7 @@ var c = canvas.getContext('2d');
 var directions = [false, false, false, false];
 
 //Pacman initial
-pac = new Pacman(1.5 * tileSize, 1.5 * tileSize, tileSize / 4, tileSize / 4, tileSize/2);
+pac = new Pacman(1.5 * tileSize, 1.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
 var dir = -10;
 var pctOpen = 100;
 
