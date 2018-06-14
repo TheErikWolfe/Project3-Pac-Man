@@ -3,7 +3,7 @@ var canvas = document.querySelector('canvas');
 
 var tilemap = document.getElementById('tilemap');
 
-var tileSize = 13;
+var tileSize = 20;
 
 var pelletsLeft = 0;
 
