@@ -209,7 +209,7 @@ function Pacman(x, y, dx, dy, radius)
     	// Pacman 
 		c.strokeStyle = 'black';
 		c.stroke();
-		c.fillStyle = 'yellow';
+		c.fillStyle = '#fdff00';
 		c.fill();
 	}
 
@@ -311,24 +311,6 @@ function Pacman(x, y, dx, dy, radius)
         {
             setDirection(3, -1.5, 0.5);
         }
-
-
-        /*if(queueMove == 0 && this.checkMove(map.array[this.getThisPos(this.y)][this.getNextPos(this.x, 0-this.dx, 0 - this.radius)]))
-        {
-            setDirection(0, -1.0, 1.0);
-        }
-        else if(queueMove == 1 && this.checkMove(map.array[this.getNextPos(this.y, 0-this.dy, 0 - this.radius)][this.getThisPos(this.x)]))
-        {
-            setDirection(1, -0.5, 1.5);
-        }
-        else if(queueMove == 2 && this.checkMove(map.array[this.getThisPos(this.y)][this.getNextPos(this.x, this.dx, this.radius)]))
-        {
-            setDirection(2, 0, 2.0);
-        }
-        else if(queueMove == 3 && this.checkMove(map.array[this.getNextPos(this.y, this.dy, this.radius)][this.getThisPos(this.x)]))
-        {
-            setDirection(3, -1.5, 0.5);
-        }*/
 	}
 
     this.checkMove = function(ar)
@@ -427,212 +409,232 @@ function animate()
 	requestAnimationFrame(animate);
     //Fixed this by changing the parameters to be pacman specific
     //No longer needs to redraw the whole map.
-	c.clearRect(pac.x - (tileSize/2), pac.y - (tileSize/2), tileSize, tileSize);
+	//c.clearRect(pac.x - (tileSize * 3 / 2), pac.y - (tileSize * 3 / 2), tileSize * 3, tileSize * 3);
+
+    // Trying to make the 9 squares around Pacman (but still in the grid) dissapear instead of the ones not part of the grid.
+    c.clearRect((pac.pacPos[0] - 1) * tileSize, (pac.pacPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
+
+    for(var i = -1; i < 2; i++)
+    {
+        for(var j = -1; j < 2; j++)
+        {
+            renderMap(pac.pacPos[1] + i, pac.pacPos[0] + j);
+        }
+    }
+
 	pac.update();
     //scoreUpdate();
 
 }
 
+/*getTileAtXY: function(x, y) {
+        var col = Math.floor(x/tileSize);
+        var row = Math.floor(y/tileSize);
+        var tile = this.getTileId(col, row);
+        return ([tile, row, col]);
+    },*/
+
 
 function initialRender()
 {
-    renderMap();
+    for (var i = 0; i < map.array.length; i++) 
+    {
+        for (var j = 0; j < map.array[i].length; j++) 
+        {
+            renderMap(i, j);
+        }
+    }
     pelletsInit();
 }
 
-
-function renderMap() {
-
-	for (var i = 0; i < map.array.length; i++) {
-        for (var j = 0; j < map.array[i].length; j++) {
-            // if (map.array[i][j] === 10) {
-            //     c.rect(j*tileSize, i*tileSize, tileSize, tileSize);
-            //     c.fillStyle = 'red';
-            //     c.fill();
-            //     c.stroke();
-            // }
-            // Check if the value is a 1, represeting a graphic should be drawn.
-			if (map.array[i][j] === 11) {
-                c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-                //var tile = tilemap.getTile(column,row);
-            }
-            if (map.array[i][j] === 12) {
-            	//top wall
-                c.drawImage(tilemap,16,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 13) {
-            	//topright corner
-                c.drawImage(tilemap,32,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 14) {
-            	//right wall
-                c.drawImage(tilemap,32,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 15) {
-            	//bottomrightcorner
-                c.drawImage(tilemap,32,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 16) {
-            	//bottom wall
-                c.drawImage(tilemap,16,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 17) {
-            	//bottom leftcorner
-                c.drawImage(tilemap,0,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 18) {
-            	//left wall
-                c.drawImage(tilemap,0,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            
+function renderMap(i, j) 
+{
+    /*if (map.array[i][j] === 10) {
+        c.rect(j*tileSize, i*tileSize, tileSize, tileSize);
+        c.fillStyle = 'red';
+        c.fill();
+        c.stroke();
+    }*/
+    // Check if the value is a 1, represeting a graphic should be drawn.
+    if (map.array[i][j] === 11) {
+        c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+        //var tile = tilemap.getTile(column,row);
+    }
+    else if (map.array[i][j] === 12) {
+        //top wall
+        c.drawImage(tilemap,16,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 13) {
+        //topright corner
+        c.drawImage(tilemap,32,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 14) {
+        //right wall
+        c.drawImage(tilemap,32,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 15) {
+        //bottomrightcorner
+        c.drawImage(tilemap,32,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 16) {
+        //bottom wall
+        c.drawImage(tilemap,16,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 17) {
+        //bottom leftcorner
+        c.drawImage(tilemap,0,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 18) {
+        //left wall
+        c.drawImage(tilemap,0,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    
 
 
-            if (map.array[i][j] === 21) {
-            	//top left corner innerwall
-                c.drawImage(tilemap,48,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 22) {
-            	//innerwall top
-                c.drawImage(tilemap,64,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 23) {
-            	//innerwall topright corner
-                c.drawImage(tilemap,144,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 24) {
-            	//innerwall right wall
-                c.drawImage(tilemap,144,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 25) {
-            	//innerwall bottom right corner
-                c.drawImage(tilemap,144,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 26) {
-            	//innerwall bottom wall
-                c.drawImage(tilemap,64,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 27) {
-            	//innerwall bottom left corner
-                c.drawImage(tilemap,48,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 28) {
-            	//innerwall left wall
-                c.drawImage(tilemap,128,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            
-            
+    else if (map.array[i][j] === 21) {
+        //top left corner innerwall
+        c.drawImage(tilemap,48,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 22) {
+        //innerwall top
+        c.drawImage(tilemap,64,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 23) {
+        //innerwall topright corner
+        c.drawImage(tilemap,144,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 24) {
+        //innerwall right wall
+        c.drawImage(tilemap,144,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 25) {
+        //innerwall bottom right corner
+        c.drawImage(tilemap,144,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 26) {
+        //innerwall bottom wall
+        c.drawImage(tilemap,64,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 27) {
+        //innerwall bottom left corner
+        c.drawImage(tilemap,48,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 28) {
+        //innerwall left wall
+        c.drawImage(tilemap,128,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    
+    
 
-            if (map.array[i][j] === 31) {
-            	//left of T -top
-                c.drawImage(tilemap,80,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 32) {
-            	//Right of T -top
-                c.drawImage(tilemap,96,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 41) {
-            	//Left of T -upside down
-                c.drawImage(tilemap,80,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 42) {
-            	//Right of T -upside down
-                c.drawImage(tilemap,96,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 43) {
-            	//Circle / left and right walls/ topleft
-                c.drawImage(tilemap,112,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 44) {
-            	//Circle / left and right walls/ bottomleft
-                c.drawImage(tilemap,112,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 45) {
-            	//Circle / left and right walls/ topright
-                c.drawImage(tilemap,128,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 46) {
-            	//Circle / left and right walls/ bottomright
-                c.drawImage(tilemap,128,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
+    else if (map.array[i][j] === 31) {
+        //left of T -top
+        c.drawImage(tilemap,80,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 32) {
+        //Right of T -top
+        c.drawImage(tilemap,96,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 41) {
+        //Left of T -upside down
+        c.drawImage(tilemap,80,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 42) {
+        //Right of T -upside down
+        c.drawImage(tilemap,96,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 43) {
+        //Circle / left and right walls/ topleft
+        c.drawImage(tilemap,112,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 44) {
+        //Circle / left and right walls/ bottomleft
+        c.drawImage(tilemap,112,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 45) {
+        //Circle / left and right walls/ topright
+        c.drawImage(tilemap,128,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 46) {
+        //Circle / left and right walls/ bottomright
+        c.drawImage(tilemap,128,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
 
 
 
 
-            if (map.array[i][j] === 33) {
-            	//Circle topleft
-                c.drawImage(tilemap,112,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 34) {
-            	//Circle topright
-                c.drawImage(tilemap,96,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 35) {
-            	//Circle bottomleft
-                c.drawImage(tilemap,96,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 36) {
-            	//Circle bottomright
-                c.drawImage(tilemap,112,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
+    else if (map.array[i][j] === 33) {
+        //Circle topleft
+        c.drawImage(tilemap,112,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 34) {
+        //Circle topright
+        c.drawImage(tilemap,96,32,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 35) {
+        //Circle bottomleft
+        c.drawImage(tilemap,96,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 36) {
+        //Circle bottomright
+        c.drawImage(tilemap,112,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
 
 
-            if (map.array[i][j] === 37) {
-            	//point/rounded corner top right
-                c.drawImage(tilemap,64,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 38) {
-            	//point/rounded corner bottom right
-                c.drawImage(tilemap,64,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 39) {
-            	//point/rounded corner top left
-                c.drawImage(tilemap,48,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-             if (map.array[i][j] === 40) {
-            	//point/rounded corner bottom left
-                c.drawImage(tilemap,48,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
+    else if (map.array[i][j] === 37) {
+        //point/rounded corner top right
+        c.drawImage(tilemap,64,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 38) {
+        //point/rounded corner bottom right
+        c.drawImage(tilemap,64,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 39) {
+        //point/rounded corner top left
+        c.drawImage(tilemap,48,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 40) {
+        //point/rounded corner bottom left
+        c.drawImage(tilemap,48,16,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
 
 
 
 
 
-            if (map.array[i][j] === 51) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,0,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 52) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,16,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 53) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,32,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 54) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,32,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 55) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,32,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 56) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,16,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 57) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,0,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-            if (map.array[i][j] === 58) {
-            	//weird inner corner? up to right
-                c.drawImage(tilemap,0,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
-            }
-
-        }
+    else if (map.array[i][j] === 51) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,0,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 52) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,16,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 53) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,32,48,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 54) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,32,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 55) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,32,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 56) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,16,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 57) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,0,80,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
+    }
+    else if (map.array[i][j] === 58) {
+        //weird inner corner? up to right
+        c.drawImage(tilemap,0,64,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
     }
 }
+
 
 
 initialRender();
