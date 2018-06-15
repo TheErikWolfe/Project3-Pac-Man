@@ -7,7 +7,7 @@ var tilemap = document.getElementById('tilemap');
 
 var tileSize = 20;
 
-var pelletsLeft = 0;
+var currentScore = 0;
 
 var map = {
 
@@ -23,17 +23,17 @@ var map = {
       [18,10,21,22,22,23,10,21,23,10,21,22,22,22,22,22,22,23,10,21,23,10,21,22,22,23,10,14],
       [18,10,27,26,26,25,10,28,24,10,27,26,26,33,34,26,26,25,10,28,24,10,27,26,26,25,10,14],
       [18,10,10,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,10,10,14],
-      [17,16,16,16,16,37,10,28,35,22,22,23,10,28,24,10,21,22,22,36,24,10,39,16,16,16,16,15],
-      [99,99,99,99,99,18,10,28,34,26,26,25,10,27,25,10,27,26,26,33,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,10,10,10,10,10,10,10,10,10,10,28,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,10,51,52,52,52,52,52,52,53,10,28,24,10,14,99,99,99,99,99],
-      [12,12,12,12,12,38,10,27,25,10,58,99,99,99,99,99,99,54,10,27,25,10,40,12,12,12,12,12],
-      [10,10,10,10,10,10,10,10,10,10,58,99,99,99,99,99,99,54,10,10,10,10,10,10,10,10,10,10],
-      [16,16,16,16,16,37,10,21,23,10,58,99,99,99,99,99,99,54,10,21,23,10,39,16,16,16,16,16],
-      [99,99,99,99,99,18,10,28,24,10,57,56,56,56,56,56,56,55,10,28,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,10,10,10,10,10,10,10,10,10,10,28,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,10,21,22,22,22,22,22,22,23,10,28,24,10,14,99,99,99,99,99],
-      [11,12,12,12,12,38,10,27,25,10,27,26,26,33,34,26,26,25,10,27,25,10,40,12,12,12,12,13],
+      [17,16,16,16,16,37,10,28,35,22,22,23,99,28,24,99,21,22,22,36,24,10,39,16,16,16,16,15],
+      [99,99,99,99,99,18,10,28,34,26,26,25,99,27,25,99,27,26,26,33,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,99,99,99,99,99,99,99,99,99,99,28,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,99,51,52,52,52,52,52,52,53,99,28,24,10,14,99,99,99,99,99],
+      [12,12,12,12,12,38,10,27,25,99,58,99,99,99,99,99,99,54,99,27,25,10,40,12,12,12,12,12],
+      [10,10,10,10,10,10,10,99,99,99,58,99,99,99,99,99,99,54,99,99,99,10,10,10,10,10,10,10],
+      [16,16,16,16,16,37,10,21,23,99,58,99,99,99,99,99,99,54,99,21,23,10,39,16,16,16,16,16],
+      [99,99,99,99,99,18,10,28,24,99,57,56,56,56,56,56,56,55,99,28,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,99,99,99,99,99,99,99,99,99,99,28,24,10,14,99,99,99,99,99],
+      [99,99,99,99,99,18,10,28,24,99,21,22,22,22,22,22,22,23,99,28,24,10,14,99,99,99,99,99],
+      [11,12,12,12,12,38,10,27,25,99,27,26,26,33,34,26,26,25,99,27,25,10,40,12,12,12,12,13],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
       [18,10,27,26,33,24,10,27,26,26,26,25,10,27,25,10,27,26,26,26,25,10,28,34,26,25,10,14],
@@ -47,7 +47,7 @@ var map = {
       [17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,15]
     ],
 
-    getTileId: function (col, row) {
+    getTileId: function (row, col) {
         //return an array [TileID, col, row]
         return (this.array[row][col]);
     },
@@ -55,14 +55,14 @@ var map = {
     getTileAtXY: function(x, y) {
         var col = Math.floor(x/tileSize);
         var row = Math.floor(y/tileSize);
-        var tile = this.getTileId(col, row);
+        var tile = this.array[row][col];
         return ([tile, row, col]);
     },
 
     isSolidTileAtXY: function (x, y) {
         var col = Math.floor(x/tileSize);
         var row = Math.floor(y/tileSize);
-        var tile = this.getTileId(col, row);
+        var tile = this.array[row][col];
         var isSolid = tile != 10 && tile != 99;
         return isSolid;
     },
@@ -70,7 +70,7 @@ var map = {
     isPelletAtXY: function (x, y) {
         var col = Math.floor(x/tileSize);
         var row = Math.floor(y/tileSize);
-        var tile = this.getTileId(col, row);
+        var tile = this.array[row][col];
         var isPellet = tile == 10;
         return isPellet;
     }
@@ -147,34 +147,34 @@ function setDirection(i, mTop, mBot)
     mouthB = mBot;
 }
 
-function pelletsInit() {
-    for (var i=0; i<map.array.length; i++) {
-        for (var j=0; j<map.array[0].length; j++) {
-            if (map.array[i][j] == 10) {
-                //pelletsLeft used later for win condition and 
-                //scoring
-                pelletsLeft++; 
-                c.rect(j*tileSize+(tileSize/2.6), i*tileSize+(tileSize/2.6), tileSize/4, tileSize/4);
-                c.fillStyle = 'yellow';
-                c.fill();
-                c.stroke();
-            }
-        }
-    }
-}
+// function pelletsInit() {
+//     for (var i=0; i<map.array.length; i++) {
+//         for (var j=0; j<map.array[0].length; j++) {
+//             if (map.array[i][j] == 10) {
+//                 //pelletsLeft used later for win condition and 
+//                 //scoring
+//                 pelletsLeft++; 
+//                 c.rect(j*tileSize+(tileSize/2.6), i*tileSize+(tileSize/2.6), tileSize/4, tileSize/4);
+//                 c.fillStyle = 'yellow';
+//                 c.fill();
+//                 c.stroke();
+//             }
+//         }
+//     }
+// }
 
-/*function scoreUpdate() {
+function scoreUpdate() {
     var pacLocation = [pac.x, pac.y];
     // console.log(map.isPelletAtXY(pac.x, pac.y));
     if (map.isPelletAtXY(pac.x, pac.y)) {
         var tileInfo = map.getTileAtXY(pac.x, pac.y);
         var row = tileInfo[1];
         var col = tileInfo[2];
-        map.array[col][row] = 99;
-        pelletsLeft--;
-        scoreText.innerHTML = pelletsLeft;
+        map.array[row][col] = 99;
+        currentScore += 50;
+        scoreText.innerHTML = currentScore;
     }
-}*/
+}
 
 function Pacman(x, y, dx, dy, radius)
 {	
@@ -249,7 +249,7 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[0] = false;
 			}
-			else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10)
+			else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10 && map.array[this.nextPos[1]][this.nextPos[0]] != 99)
 			{
                 if(directions[0])
                 {
@@ -273,7 +273,7 @@ function Pacman(x, y, dx, dy, radius)
 			{
 				directions[1] = false;
 			}
-            else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10 )
+            else if(map.array[this.nextPos[1]][this.nextPos[0]] != 10 && map.array[this.nextPos[1]][this.nextPos[0]] != 99 )
             {
                 if(directions[1])
                 {
@@ -320,7 +320,7 @@ function Pacman(x, y, dx, dy, radius)
     this.checkMove = function(ar)
     {
         var check = false;
-        if(ar == 10)
+        if(ar == 10 || ar == 99)
         {
             check = true;
         }
@@ -333,7 +333,7 @@ function Pacman(x, y, dx, dy, radius)
         this.pacPos[1] = this.getThisPos(this.y);
 
 		// left up right down
-		if(directions[0] && map.array[this.getThisPos(this.y)][this.getNextPos(this.x, -this.dx, -this.radius)] == 10)
+		if(directions[0] && (map.array[this.getThisPos(this.y)][this.getNextPos(this.x, -this.dx, -this.radius)] == 10 || map.array[this.getThisPos(this.y)][this.getNextPos(this.x, -this.dx, -this.radius)] == 99))
 		{
             this.nextPos[0] = this.getNextPos(this.x, -this.dx, -this.radius);
             this.nextPos[1] = this.getThisPos(this.y);
@@ -341,7 +341,7 @@ function Pacman(x, y, dx, dy, radius)
 			this.x -= this.dx;
             this.y = this.nextPos[1] * tileSize + this.radius;
         }
-		else if(directions[1] && map.array[this.getNextPos(this.y, -this.dy, -this.radius)][this.getThisPos(this.x)] == 10)
+		else if(directions[1] && (map.array[this.getNextPos(this.y, -this.dy, -this.radius)][this.getThisPos(this.x)] == 10 || map.array[this.getNextPos(this.y, -this.dy, -this.radius)][this.getThisPos(this.x)] == 99))
 		{
             this.nextPos[1] = this.getNextPos(this.y, -this.dy, -this.radius);
             this.nextPos[0] = this.getThisPos(this.x);
@@ -386,7 +386,7 @@ function Pacman(x, y, dx, dy, radius)
             console.log('y, x, ' + this.y + ', ' + this.x);
 
 		}
-		else if(directions[2] && map.array[this.getThisPos(this.y)][this.getNextPos(this.x, this.dx, this.radius)] == 10)
+		else if(directions[2] && (map.array[this.getThisPos(this.y)][this.getNextPos(this.x, this.dx, this.radius)] == 10 || map.array[this.getThisPos(this.y)][this.getNextPos(this.x, this.dx, this.radius)] == 99))
 		{
             this.nextPos[0] = this.getNextPos(this.x, this.dx, this.radius);
             this.nextPos[1] = this.getThisPos(this.y);
@@ -394,7 +394,7 @@ function Pacman(x, y, dx, dy, radius)
 			this.x += this.dx;
             this.y = this.nextPos[1] * tileSize + this.radius;
         }
-		else if(directions[3] && map.array[this.getNextPos(this.y, this.dy, this.radius)][this.getThisPos(this.x)] == 10)
+		else if(directions[3] && (map.array[this.getNextPos(this.y, this.dy, this.radius)][this.getThisPos(this.x)] == 10 || map.array[this.getNextPos(this.y, this.dy, this.radius)][this.getThisPos(this.x)] == 99))
 		{
             this.nextPos[1] = this.getNextPos(this.y, this.dy, this.radius);
             this.nextPos[0] = this.getThisPos(this.x);
@@ -427,6 +427,7 @@ function animate()
     }
 
 	pac.update();
+    scoreUpdate();
 
 }
 
@@ -439,17 +440,17 @@ function initialRender()
             renderMap(i, j);
         }
     }
-    pelletsInit();
+    // pelletsInit();
 }
 
 function renderMap(i, j) 
 {
-    /*if (map.array[i][j] === 10) {
-        c.rect(j*tileSize, i*tileSize, tileSize, tileSize);
-        c.fillStyle = 'red';
+    if (map.array[i][j] === 10) {
+        c.rect(j*tileSize+(tileSize/2.6), i*tileSize+(tileSize/2.6), tileSize/4, tileSize/4);
+        c.fillStyle = 'yellow';
         c.fill();
         c.stroke();
-    }*/
+    }
     // Check if the value is a 1, represeting a graphic should be drawn.
     if (map.array[i][j] === 11) {
         c.drawImage(tilemap, 0,0,16,16, j*tileSize, i*tileSize, tileSize, tileSize);
