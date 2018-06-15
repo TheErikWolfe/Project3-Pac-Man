@@ -46,7 +46,7 @@ button {
 
 .slider {
 	overflow-y: hidden;
-	margin-top: 100px;
+	margin-top: 10px;
 	transition-property: all;
 	transition-duration: 3s;
 	transition-timing-function: cubic-bezier(1, 1, 1, 1);

@@ -98,8 +98,6 @@ var queueMove = 0;
 
 //Pacman initial
 // x, y, dx, dy, radius
-pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
-blinky = new Ghost(16*tileSize, 23*tileSize);
 
 var dir = -10;
 var pctOpen = 100;
@@ -203,8 +201,14 @@ function gameLogicUpdate() {
 
 function Ghost(x, y)
 {
+    this.getThisPos = function(pos)
+    {
+        return (pos - (pos % tileSize)) / tileSize;
+    }  
+
     this.x = x;
     this.y = y;
+    this.ghostPos = [this.getThisPos(this.x), this.getThisPos(this.y)];
     
     this.draw = function()
     {
@@ -284,7 +288,24 @@ function Ghost(x, y)
 
     this.update = function()
     {
-
+        if((pac.x - tileSize / 2 + 1) - this.x > 0)
+        {
+            this.x++;
+        }
+        else
+        {
+            this.x--;
+        }
+        if((pac.y - tileSize / 2 + 1) + - this.y > 0)
+        {
+            this.y++;
+        }
+        else
+        {
+            this.y--;
+        }
+        this.draw();
+        this.ghostPos = [this.getThisPos(this.x), this.getThisPos(this.y)]; 
     }
 }
 
@@ -499,16 +520,17 @@ function animate()
 
     // Trying to make the 9 squares around Pacman (but still in the grid) dissapear instead of the ones not part of the grid.
     c.clearRect((pac.pacPos[0] - 1) * tileSize, (pac.pacPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
-
+    c.clearRect((blinky.ghostPos[0] - 1) * tileSize, (blinky.ghostPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
     for(var i = -1; i < 2; i++)
     {
         for(var j = -1; j < 2; j++)
         {
             renderMap(pac.pacPos[1] + i, pac.pacPos[0] + j);
+            renderMap(blinky.ghostPos[1] + i, blinky.ghostPos[0] + j);
         }
     }
 
-    blinky.draw();
+    blinky.update();
 	pac.update();
     gameLogicUpdate();
     checkGhostCollision();
@@ -524,6 +546,8 @@ function initialRender()
             renderMap(i, j);
         }
     }
+    pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
+    blinky = new Ghost(12 * tileSize, 14 * tileSize);
 }
 
 function renderMap(i, j) 
