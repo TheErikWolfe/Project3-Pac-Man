@@ -35,3 +35,8 @@
 1. https://joshondesign.com/p/books/canvasdeepdive/title.html
 2. Look at other canvas references/documentation
 3. Look at map making and collision detection.
+
+## TODO 6/13
+0. Finish Pac-Man's clearRect function
+1. Make A ghost
+2. Ghost logic and movement
