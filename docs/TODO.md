@@ -36,7 +36,12 @@
 2. Look at other canvas references/documentation
 3. Look at map making and collision detection.
 
-## TODO 6/13
+## TODO 6/15
 0. Finish Pac-Man's clearRect function
 1. Make A ghost
 2. Ghost logic and movement
+
+## Revised TODO 6/15 Post Lunch
+0. Ghost Logic
+1. Power Ups
+2. Win Screen?
