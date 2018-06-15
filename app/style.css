@@ -1,19 +1,23 @@
-@import url('https://fonts.googleapis.com/css?family=Bungee+Inline');
+@import url('https://fonts.googleapis.com/css?family=Bungee');
 
 body {
 	background-color: black;
+	overflow:hidden;
 }
 
 h1 {
 	margin:0 auto;
-	font-family: 'Bungee Inline', cursive;
+	font-size: 4em;
+	font-family: 'Bungee', cursive;
 	background-color: yellow;
 	text-align: center;
-	width: 200px;
+	width: 300px;
+	color: black;
 }
 
 h3 {
 	color: white;
+	margin-top: 10px;
 }
 
 canvas {
@@ -22,8 +26,35 @@ canvas {
 	display: inline;
 }
 
+button {
+	background-color: yellow;
+	color: black;
+	font-family: "Bungee", cursive;
+}
+
 #game-canvas {
 	margin-top: 20px;
 	width: 100%;
 	text-align:center;
+}
+
+#slider {
+	text-align: center;
+	color:white;
+
+}
+
+.slider {
+	overflow-y: hidden;
+	margin-top: 100px;
+	transition-property: all;
+	transition-duration: 3s;
+	transition-timing-function: cubic-bezier(1, 1, 1, 1);
+}
+
+.slider.bottom {
+	margin-top: 1000px;
+	transition-property: all;
+	transition-duration: 3s;
+	transition-timing-function: cubic-bezier(1, 1, 1, 1);
 }

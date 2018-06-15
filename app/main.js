@@ -1,9 +1,12 @@
 // comment
-var scoreText = document.getElementById('current-score');
+
+var scoreText = document.getElementById('score-text');
 
 var canvas = document.querySelector('canvas');
 
 var tilemap = document.getElementById('tilemap');
+
+var startScreen = document.getElementById('start-screen');
 
 var tileSize = 20;
 
@@ -95,8 +98,8 @@ var queueMove = 0;
 
 //Pacman initial
 // x, y, dx, dy, radius
-pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 4, tileSize / 4, tileSize/2);
-blinky = new Ghost(12*tileSize, 14*tileSize);
+pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
+blinky = new Ghost(16*tileSize, 23*tileSize);
 
 var dir = -10;
 var pctOpen = 100;
@@ -110,6 +113,9 @@ document.onreadystatechange = function() {
 		//Initialize buttons
 		window.addEventListener('keydown', arrowKeysLogic);
 	}
+    if (document.readyState == "complete") {
+        document.getElementById("slider").classList.remove('bottom');
+    }
 }
 
 function arrowKeysLogic(){
@@ -152,6 +158,16 @@ function scoreUpdate() {
         currentScore += 50;
         scoreText.innerHTML = "Score: " + currentScore;
     }
+}
+
+function checkGhostCollision() {
+    var pacTile = map.getTileAtXY(pac.x, pac.y);
+    var blinkyTile = map.getTileAtXY(blinky.x, blinky.y);
+
+    if (pacTile[1] == blinkyTile[1] && pacTile[2]==blinkyTile[2]) {
+        console.log("YOU DEAD!");
+    }
+
 }
 
 function handlePipe() {
@@ -495,6 +511,7 @@ function animate()
     blinky.draw();
 	pac.update();
     gameLogicUpdate();
+    checkGhostCollision();
 
 }
 
@@ -703,6 +720,5 @@ function renderMap(i, j)
 function startGame() {
     initialRender();
     animate();
+    startScreen.style.display="none";
 }
-
-startGame();
