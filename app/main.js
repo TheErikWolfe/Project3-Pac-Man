@@ -92,6 +92,8 @@ var queueMove = 0;
 //Pacman initial
 // x, y, dx, dy, radius
 pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
+blinky = new Ghost(12*tileSize, 14*tileSize);
+
 var dir = -10;
 var pctOpen = 100;
 
@@ -172,6 +174,92 @@ function pelletsInit() {
     }
 }*/
 
+function Ghost(x, y)
+{
+    this.x = x;
+    this.y = y;
+    
+    this.draw = function()
+    {
+        this.makeBody();
+        this.makeEyes();
+        this.makePupils();
+    }
+
+    this.makeBody = function()
+    {
+        // context.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x,y);
+        // moveTo(x, y) and lineTo(x, y)
+        //c.rect(this.x, this.y, tileSize, tileSize)
+        //c.moveTo(20,100)
+        c.moveTo(this.x, this.y + tileSize / 2);
+        console.log(this.x + ', ' + this.y);
+        //c.bezierCurveTo(20, 20, 200, 20, 200, 100)
+        c.bezierCurveTo(this.x, this.y, this.x + tileSize, this.y, this.x + tileSize, this.y + tileSize / 2);
+        c.rect(this.x, this.y + tileSize / 2, tileSize, tileSize / 3);
+        //Ghostly Spikes
+        c.moveTo(this.x, this.y + tileSize * 5 / 6);
+        c.lineTo(this.x, this.y + tileSize);
+        c.lineTo(this.x + tileSize * 1 / 4, this.y + tileSize * 5 / 6);
+        //c.closePath();
+        c.moveTo(this.x + tileSize / 4, this.y + tileSize * 5 / 6);
+        c.lineTo(this.x + tileSize / 2, this.y + tileSize);
+        c.lineTo(this.x + tileSize * 3 / 4, this.y + tileSize * 5 / 6);
+        //c.closePath();
+        c.moveTo(this.x + tileSize * 3 / 4, this.y + tileSize * 5 / 6);
+        c.lineTo(this.x + tileSize, this.y + tileSize);
+        c.lineTo(this.x + tileSize, this.y + tileSize * 5 / 6);
+        c.closePath();
+
+        c.strokeStyle = 'red';
+        c.stroke();
+        c.fillStyle = 'red';
+        c.fill();
+    }
+
+    this.makeEyes = function()
+    {
+        //context.arc(x,y,r,sAngle,eAngle,counterclockwise); 
+        // ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise);
+        c.beginPath();
+        c.ellipse(this.x + tileSize * 5 / 16, this.y + tileSize / 2, tileSize / 6, tileSize / 5, 0, 2*Math.PI, false)
+        c.strokeStyle = 'black';
+        c.stroke();
+        c.fillStyle = 'white';
+        c.fill();
+
+        c.beginPath();
+        c.ellipse(this.x + tileSize * 11 / 16, this.y + tileSize / 2, tileSize / 6, tileSize / 5, 0, 2*Math.PI, false)
+        c.strokeStyle = 'black';
+        c.stroke();
+        c.fillStyle = 'white';
+        c.fill();
+    }
+
+    this.makePupils = function()
+    {
+        //Making dem pupils
+        c.beginPath();
+        c.arc(this.x + tileSize * 5 / 16, this.y + tileSize / 2, tileSize/12, 0, 2 * Math.PI);
+        /*c.strokeStyle = 'white';
+        c.stroke();*/
+        c.fillStyle = 'black';
+        c.fill();
+
+        c.beginPath();
+        c.arc(this.x + tileSize * 11 / 16, this.y + tileSize / 2, tileSize/12, 0, 2 * Math.PI);
+        /*c.strokeStyle = 'white';
+        c.stroke();*/
+        c.fillStyle = 'black';
+        c.fill();
+    }
+
+    this.update = function()
+    {
+
+    }
+}
+
 function Pacman(x, y, dx, dy, radius)
 {	
 	this.x = x;
@@ -221,19 +309,6 @@ function Pacman(x, y, dx, dy, radius)
 
 		//Wall collision stuff
         var oneMoreMove = true;
-        
-        // console.log(this.nextPos);
-
-        //queue goes here I think
-       /* if(this.moveCheck())
-        {
-            setDirection(queueMove);
-        }
-        else
-        {
-            this.move();
-        }
-*/
         
 		if(directions[0] || directions[2])
 		{ 
@@ -409,7 +484,6 @@ function animate()
 	requestAnimationFrame(animate);
     //Fixed this by changing the parameters to be pacman specific
     //No longer needs to redraw the whole map.
-	//c.clearRect(pac.x - (tileSize * 3 / 2), pac.y - (tileSize * 3 / 2), tileSize * 3, tileSize * 3);
 
     // Trying to make the 9 squares around Pacman (but still in the grid) dissapear instead of the ones not part of the grid.
     c.clearRect((pac.pacPos[0] - 1) * tileSize, (pac.pacPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
@@ -422,18 +496,11 @@ function animate()
         }
     }
 
+    blinky.draw();
 	pac.update();
     //scoreUpdate();
 
 }
-
-/*getTileAtXY: function(x, y) {
-        var col = Math.floor(x/tileSize);
-        var row = Math.floor(y/tileSize);
-        var tile = this.getTileId(col, row);
-        return ([tile, row, col]);
-    },*/
-
 
 function initialRender()
 {
@@ -639,3 +706,4 @@ function renderMap(i, j)
 
 initialRender();
 animate();
+
