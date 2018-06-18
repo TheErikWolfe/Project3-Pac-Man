@@ -22,6 +22,10 @@
 
 ## Basic screen layout
 
+## Bugs
+* Ghost gets stuck on walls
+* Death animation doesn't reset properly
+* A star algorithm doesnt pass back previous node properly
 
 ## Color Palette
 * Pac-Man Yellow: #fdff00
@@ -49,3 +53,4 @@
 ## TODO 6/16
 0. Ghost Pathing
 1. Death Conditions
+
