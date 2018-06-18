@@ -1,19 +1,18 @@
 // comment
-var scoreText = document.getElementById('current-score');
+
+var scoreText = document.getElementById('score-text');
 
 var canvas = document.querySelector('canvas');
 
 var tilemap = document.getElementById('tilemap');
 
+var startScreen = document.getElementById('start-screen');
+
 var tileSize = 20;
 
 var currentScore = 0;
 
-var map = {
-
-    cols: 28,
-    rows: 31,
-    array: [
+var initialMap = [
       [11,12,12,12,12,12,12,12,12,12,12,12,12,31,32,12,12,12,12,12,12,12,12,12,12,12,12,13],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
@@ -45,7 +44,13 @@ var map = {
       [18,10,27,26,26,26,26,26,26,26,26,25,10,27,25,10,27,26,26,26,26,26,26,26,26,25,10,14],
       [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
       [17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,15]
-    ],
+    ];
+
+var map = {
+
+    cols: 28,
+    rows: 31,
+    array: JSON.parse(JSON.stringify(initialMap)),
 
     getTileId: function (row, col) {
         //return an array [TileID, col, row]
@@ -93,8 +98,6 @@ var queueMove = 0;
 
 //Pacman initial
 // x, y, dx, dy, radius
-pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
-blinky = new Ghost(12*tileSize, 14*tileSize);
 
 var dir = -10;
 var pctOpen = 100;
@@ -108,6 +111,9 @@ document.onreadystatechange = function() {
 		//Initialize buttons
 		window.addEventListener('keydown', arrowKeysLogic);
 	}
+    if (document.readyState == "complete") {
+        document.getElementById("slider").classList.remove('bottom');
+    }
 }
 
 function arrowKeysLogic(){
@@ -152,6 +158,16 @@ function scoreUpdate() {
     }
 }
 
+function checkGhostCollision() {
+    var pacTile = map.getTileAtXY(pac.x, pac.y);
+    var blinkyTile = map.getTileAtXY(blinky.x, blinky.y);
+
+    if (pacTile[1] == blinkyTile[1] && pacTile[2]==blinkyTile[2]) {
+        console.log("YOU DEAD!");
+    }
+
+}
+
 function handlePipe() {
     if (pac.getLocation()[0] == -7.5) {
         pac.x = 567.5;
@@ -162,46 +178,14 @@ function handlePipe() {
 }
 
 function checkForWin() {
-    if (currentScore == 12900) {
+    if (currentScore % 12900 == 0) {
         resetGame();
     }
 }
 
 function resetGame() {
 
-    map.array = [
-      [11,12,12,12,12,12,12,12,12,12,12,12,12,31,32,12,12,12,12,12,12,12,12,12,12,12,12,13],
-      [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
-      [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
-      [18,10,28,99,99,24,10,28,99,99,99,24,10,28,24,10,28,99,99,99,24,10,28,99,99,24,10,14],
-      [18,10,27,26,26,25,10,27,26,26,26,25,10,27,25,10,27,26,26,26,25,10,27,26,26,25,10,14],
-      [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
-      [18,10,21,22,22,23,10,21,23,10,21,22,22,22,22,22,22,23,10,21,23,10,21,22,22,23,10,14],
-      [18,10,27,26,26,25,10,28,24,10,27,26,26,33,34,26,26,25,10,28,24,10,27,26,26,25,10,14],
-      [18,10,10,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,10,10,14],
-      [17,16,16,16,16,37,10,28,35,22,22,23,99,28,24,99,21,22,22,36,24,10,39,16,16,16,16,15],
-      [99,99,99,99,99,18,10,28,34,26,26,25,99,27,25,99,27,26,26,33,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,99,99,99,99,99,99,99,99,99,99,28,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,99,51,52,52,52,52,52,52,53,99,28,24,10,14,99,99,99,99,99],
-      [12,12,12,12,12,38,10,27,25,99,58,99,99,99,99,99,99,54,99,27,25,10,40,12,12,12,12,12],
-      [10,10,10,10,10,10,10,99,99,99,58,99,99,99,99,99,99,54,99,99,99,10,10,10,10,10,10,10,99],
-      [16,16,16,16,16,37,10,21,23,99,58,99,99,99,99,99,99,54,99,21,23,10,39,16,16,16,16,16],
-      [99,99,99,99,99,18,10,28,24,99,57,56,56,56,56,56,56,55,99,28,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,99,99,99,99,99,99,99,99,99,99,28,24,10,14,99,99,99,99,99],
-      [99,99,99,99,99,18,10,28,24,99,21,22,22,22,22,22,22,23,99,28,24,10,14,99,99,99,99,99],
-      [11,12,12,12,12,38,10,27,25,99,27,26,26,33,34,26,26,25,99,27,25,10,40,12,12,12,12,13],
-      [18,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,14],
-      [18,10,21,22,22,23,10,21,22,22,22,23,10,28,24,10,21,22,22,22,23,10,21,22,22,23,10,14],
-      [18,10,27,26,33,24,10,27,26,26,26,25,10,27,25,10,27,26,26,26,25,10,28,34,26,25,10,14],
-      [18,10,10,10,28,24,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,28,24,10,10,10,14],
-      [44,22,23,10,28,24,10,21,23,10,21,22,22,22,22,22,22,23,10,21,23,10,28,24,10,21,22,46],
-      [43,26,25,10,27,25,10,28,24,10,27,26,26,33,34,26,26,25,10,28,24,10,27,25,10,27,26,45],
-      [18,10,10,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,28,24,10,10,10,10,10,10,14],
-      [18,10,21,22,22,22,22,36,35,22,22,23,10,28,24,10,21,22,22,36,35,22,22,22,22,23,10,14],
-      [18,10,27,26,26,26,26,26,26,26,26,25,10,27,25,10,27,26,26,26,26,26,26,26,26,25,10,14],
-      [18,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,14],
-      [17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,15]
-    ];
+    map.array = JSON.parse(JSON.stringify(initialMap));
     c.clearRect(0,0,canvas.width,canvas.height);
     initialRender();
 
@@ -217,8 +201,14 @@ function gameLogicUpdate() {
 
 function Ghost(x, y)
 {
+    this.getThisPos = function(pos)
+    {
+        return (pos - (pos % tileSize)) / tileSize;
+    }  
+
     this.x = x;
     this.y = y;
+    this.ghostPos = [this.getThisPos(this.x), this.getThisPos(this.y)];
     
     this.draw = function()
     {
@@ -235,7 +225,7 @@ function Ghost(x, y)
         //c.moveTo(20,100)
         c.beginPath();
         c.moveTo(this.x, this.y + tileSize / 2);
-        console.log(this.x + ', ' + this.y);
+        // console.log(this.x + ', ' + this.y);
         //c.bezierCurveTo(20, 20, 200, 20, 200, 100)
         c.bezierCurveTo(this.x, this.y, this.x + tileSize, this.y, this.x + tileSize, this.y + tileSize / 2);
         c.rect(this.x, this.y + tileSize / 2, tileSize, tileSize / 3);
@@ -298,7 +288,24 @@ function Ghost(x, y)
 
     this.update = function()
     {
-
+        if((pac.x - tileSize / 2 + 1) - this.x > 0)
+        {
+            this.x++;
+        }
+        else
+        {
+            this.x--;
+        }
+        if((pac.y - tileSize / 2 + 1) + - this.y > 0)
+        {
+            this.y++;
+        }
+        else
+        {
+            this.y--;
+        }
+        this.draw();
+        this.ghostPos = [this.getThisPos(this.x), this.getThisPos(this.y)]; 
     }
 }
 
@@ -513,18 +520,20 @@ function animate()
 
     // Trying to make the 9 squares around Pacman (but still in the grid) dissapear instead of the ones not part of the grid.
     c.clearRect((pac.pacPos[0] - 1) * tileSize, (pac.pacPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
-
+    c.clearRect((blinky.ghostPos[0] - 1) * tileSize, (blinky.ghostPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
     for(var i = -1; i < 2; i++)
     {
         for(var j = -1; j < 2; j++)
         {
             renderMap(pac.pacPos[1] + i, pac.pacPos[0] + j);
+            renderMap(blinky.ghostPos[1] + i, blinky.ghostPos[0] + j);
         }
     }
 
-    blinky.draw();
+    blinky.update();
 	pac.update();
     gameLogicUpdate();
+    checkGhostCollision();
 
 }
 
@@ -537,6 +546,8 @@ function initialRender()
             renderMap(i, j);
         }
     }
+    pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
+    blinky = new Ghost(12 * tileSize, 14 * tileSize);
 }
 
 function renderMap(i, j) 
@@ -733,6 +744,5 @@ function renderMap(i, j)
 function startGame() {
     initialRender();
     animate();
+    startScreen.style.display="none";
 }
-
-startGame();
