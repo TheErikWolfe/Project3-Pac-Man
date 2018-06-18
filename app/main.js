@@ -328,7 +328,7 @@ function Ghost(x, y, dx, dy)
     }
 
     // function reconstructPath(cameFrom, current)
-    this.reconstructPath = function(cameFrom, current)
+    this.reconstructPath = function(goToX, goToY, current)
     {
 
 // //     totalPath := {current}
@@ -336,13 +336,16 @@ function Ghost(x, y, dx, dy)
 // //     while current in cameFrom.Keys:
 
         //var i = cameFrom.length - 1;
-        while(current.xPos != this.ghostPos[0] && current.yPos != this.ghostPos[1])
+        //console.log("Pacman: " + pac.pacPos);
+        //console.log("Blinky: " + this.ghostPos)
+        while(current.xPos != this.ghostPos[0] || current.yPos != this.ghostPos[1])
         {
             totalPath.push(current.nodeCameFrom);
+            //console.log(totalPath);
             current = current.nodeCameFrom;
-            console.log(current);
+            //console.log(current);
         }
-        console.log(totalPath);
+        //console.log(totalPath);
             /*//console.log(cameFrom[i]+ ', ' + current);
             if(cameFrom[i].nodeCameFrom.xPos == current.xPos && cameFrom[i].nodeCameFrom.yPos == current.yPos)
             {
@@ -412,7 +415,7 @@ function Ghost(x, y, dx, dy)
             if(openSet[saveNum].xPos == goToX && openSet[saveNum].yPos == goToY)
             {
 //             return reconstructPath(cameFrom, current)
-                return this.reconstructPath(cameFrom, current);
+                return this.reconstructPath(goToX, goToY, current);
                 //return cameFrom;
             }
 
@@ -461,7 +464,7 @@ function Ghost(x, y, dx, dy)
 //             //the "dist_between" function may vary as per the solution requirements.
 //             tentative_gScore := gScore[current] + dist_between(current, neighbor)
                 var tentative_gScore = current.gScore + this.distance(current.xPos, current.yPos, neighbors[i][0], neighbors[i][1]);
-                console.log(tentative_gScore + ', ' + openSet[openSet.length - 1].gScore)
+                //console.log(tentative_gScore + ', ' + openSet[openSet.length - 1].gScore)
 //             if tentative_gScore >= gScore[neighbor]
                 if(tentative_gScore < openSet[openSet.length - 1].gScore)
                 {
@@ -488,37 +491,57 @@ function Ghost(x, y, dx, dy)
     this.path = [];
     this.update = function(ct)
     {
+        
         // Going to attempt A* Pathing Algorithm now!
         /*if(ct == Math.round(tileSize/2))
         {
             this.path = this.aStar(pac.pacPos[0], pac.pacPos[1]);
-            console.log("updating path");
+            //console.log("updating path");
             //console.log(this.path);
         }
         else
         {
-            console.log("making a move");
-            if(this.path[0].posX > this.x)
+            this.x = this.path[this.path.length - 1].xPos * tileSize;
+            this.y = this.path[this.path.length - 1].yPos * tileSize;
+            this.path.pop();
+            
+        }*/
+        if(ct == Math.round(tileSize/2))
+        {
+            this.path = this.aStar(pac.pacPos[0], pac.pacPos[1]);
+            //console.log("updating path");
+            this.path.pop();
+            //console.log(this.path);
+        }
+        else if(ct != Math.round(tileSize/2) && this.path[this.path.length - 1].xPos != undefined && this.path[this.path.length - 1].yPos != undefined)
+        {
+            //console.log("this.path: " + this.path[this.path.length - 1].xPos + ', ' + this.path[this.path.length - 1].yPos);
+            //console.log(this.path[this.path.length - 1]);
+            if(this.path[this.path.length - 1].xPos * tileSize > this.x)
             {
                 this.x++;
             }
-            else
+            else if(this.path[this.path.length - 1].xPos * tileSize < this.x)
             {
                 this.x--;
             }
-            if(this.path[0].posY > this.y)
+            else if(this.path[this.path.length - 1].yPos * tileSize > this.y)
             {
                 this.y++;
             }
-            else
+            else if(this.path[this.path.length - 1].yPos * tileSize < this.y)
             {
                 this.y--;
             }
-            if(this.path[0].posY == this.y && this.path[0].posX == this.x)
+            if(this.path[this.path.length - 1].posY == this.y && this.path[this.path.length - 1].posX == this.x)
             {
-                this.path.shift();
+                this.path.pop();
+                //console.log("made it pop: " + this.path);
             }
-        }*/
+        }
+
+
+        //This is the movement where the ghost can break through walls and is just trying to get to Pac-Man
         /*if((pac.x - tileSize / 2 + 1) - this.x > 0)
         {
             this.x++;
@@ -540,7 +563,7 @@ function Ghost(x, y, dx, dy)
 
         
 
-        var pacDirection = [(pac.x - tileSize / 2) - this.x, (pac.y - tileSize / 2) - this.y];
+        /*var pacDirection = [(pac.x - tileSize / 2) - this.x, (pac.y - tileSize / 2) - this.y];
         if(this.y % tileSize == 0)
         {
             if(this.x % tileSize == 0)
@@ -606,7 +629,7 @@ function Ghost(x, y, dx, dy)
                     this.y -= dy;
                 }
             }
-        }
+        }*/
         this.draw();
         this.ghostPos = [this.getThisPos(this.x), this.getThisPos(this.y)];
     }
