@@ -886,7 +886,7 @@ function initialRender()
         }
     }
     pac = new Pacman(13.5 * tileSize, 23.5 * tileSize, tileSize / 8, tileSize / 8, tileSize/2);
-    blinky = new Ghost(12 * tileSize, 11 * tileSize, tileSize / 8, tileSize / 8);
+    blinky = new Ghost(12 * tileSize, 11 * tileSize, tileSize / 16, tileSize / 16);
 }
 
 function renderMap(i, j) 
