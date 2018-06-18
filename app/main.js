@@ -303,20 +303,20 @@ function Ghost(x, y, dx, dy)
     {
     //     // For each node, the cost of getting from the start node to that node.
     //     gScore := map with default value of Infinity
-            this.xPos = xPos;
-            this.yPos = yPos;
-            this.gScore = Infinity;
-            this.nodeCameFrom = nodeCameFrom;
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.gScore = Infinity;
+        this.nodeCameFrom = nodeCameFrom;
 //            this.hScore = hScore;
 
-            //     fScore := map with default value of Infinity
+        //     fScore := map with default value of Infinity
 
 //     // For the first node, that value is completely heuristic.
 //     fScore[start] := heuristic_cost_estimate(start, goal)
 
-            this.fScore = Infinity;
-    //     // The cost of going from start to start is zero.
-    //     gScore[start] := 0
+        this.fScore = Infinity;
+//     // The cost of going from start to start is zero.
+//     gScore[start] := 0
 
 
     }
@@ -343,7 +343,7 @@ function Ghost(x, y, dx, dy)
             totalPath.push(current.nodeCameFrom);
             //console.log(totalPath);
             current = current.nodeCameFrom;
-            //console.log(current);
+            console.log(current);
         }
         //console.log(totalPath);
             /*//console.log(cameFrom[i]+ ', ' + current);
@@ -533,7 +533,7 @@ function Ghost(x, y, dx, dy)
             {
                 this.y--;
             }
-            if(this.path[this.path.length - 1].posY == this.y && this.path[this.path.length - 1].posX == this.x)
+            if(this.path[this.path.length - 1].yPos * tileSize == this.y && this.path[this.path.length - 1].xPos * tileSize == this.x)
             {
                 this.path.pop();
                 //console.log("made it pop: " + this.path);
@@ -910,14 +910,14 @@ function animate()
     }
     pac.update();
     blinky.update(aStarCt);
-    if(aStarCt == Math.round(tileSize / 2))
-    {
-        aStarCt = 0;
-    }
-    else
-    {
-        aStarCt++;
-    }
+    // if(aStarCt == Math.round(tileSize / 2))
+    // {
+    //     aStarCt = 0;
+    // }
+    // else
+    // {
+    //     aStarCt++;
+    // }
     
 	
     gameLogicUpdate();
