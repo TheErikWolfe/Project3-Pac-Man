@@ -164,6 +164,8 @@ function checkGhostCollision() {
 
     if (pacTile[1] == blinkyTile[1] && pacTile[2]==blinkyTile[2]) {
         console.log("YOU DEAD!");
+        /*deathAnimate();
+        resetGame();*/
     }
 
 }
@@ -659,6 +661,23 @@ function Pacman(x, y, dx, dy, radius)
     this.nextPos = [this.getNextPos(this.x, -this.dx, this.radius), this.getThisPos(this.y)];
 
     //Pac-Man's current location
+    this.death = function()
+    {
+        var fltOpen = pctOpen / 25;
+        c.beginPath();
+
+        // Pacman Body and mouth
+        c.arc(this.x, this.y, this.radius, (mouthT + fltOpen * 0.2) * Math.PI, (mouthB - fltOpen * 0.2) * Math.PI);
+        c.lineTo(this.x, this.y);
+        c.closePath();
+
+        // Pacman 
+        c.strokeStyle = 'black';
+        c.stroke();
+        c.fillStyle = '#fdff00';
+        c.fill();
+        pctOpen -= dir;
+    }
 
 	this.draw = function()
 	{
@@ -841,6 +860,30 @@ function Pacman(x, y, dx, dy, radius)
 }
 
 var aStarCt = Math.round(tileSize / 2);
+
+function deathAnimate() 
+{
+    if(pctOpen != 0)
+    {
+        requestAnimationFrame(deathAnimate);
+    }
+    //Fixed this by changing the parameters to be pacman specific
+    //No longer needs to redraw the whole map.
+
+    // Trying to make the 9 squares around Pacman (but still in the grid) dissapear instead of the ones not part of the grid.
+    c.clearRect((pac.pacPos[0] - 1) * tileSize, (pac.pacPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
+    c.clearRect((blinky.ghostPos[0] - 1) * tileSize, (blinky.ghostPos[1] - 1) * tileSize, 3 * tileSize, 3 * tileSize);
+    for(var i = -1; i < 2; i++)
+    {
+        for(var j = -1; j < 2; j++)
+        {
+            renderMap(pac.pacPos[1] + i, pac.pacPos[0] + j);
+            renderMap(blinky.ghostPos[1] + i, blinky.ghostPos[0] + j);
+        }
+    }
+    pac.death();
+
+}
 
 function animate() 
 {
