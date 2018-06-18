@@ -45,3 +45,7 @@
 0. Ghost Logic
 1. Power Ups
 2. Win Screen?
+
+## TODO 6/16
+0. Ghost Pathing
+1. Death Conditions
