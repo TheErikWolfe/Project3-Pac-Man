@@ -301,22 +301,22 @@ function Ghost(x, y, dx, dy)
 
     this.makeNode = function (xPos, yPos, nodeCameFrom)
     {
-    //     // For each node, the cost of getting from the start node to that node.
-    //     gScore := map with default value of Infinity
+        // For each node, the cost of getting from the start node to that node.
+        // gScore := map with default value of Infinity
         this.xPos = xPos;
         this.yPos = yPos;
         this.gScore = Infinity;
         this.nodeCameFrom = nodeCameFrom;
-//            this.hScore = hScore;
+        // this.hScore = hScore;
 
         //     fScore := map with default value of Infinity
 
-//     // For the first node, that value is completely heuristic.
-//     fScore[start] := heuristic_cost_estimate(start, goal)
+        // For the first node, that value is completely heuristic.
+        // fScore[start] := heuristic_cost_estimate(start, goal)
 
         this.fScore = Infinity;
-//     // The cost of going from start to start is zero.
-//     gScore[start] := 0
+        // The cost of going from start to start is zero.
+        // gScore[start] := 0
 
 
     }
@@ -331,44 +331,24 @@ function Ghost(x, y, dx, dy)
     this.reconstructPath = function(goToX, goToY, current)
     {
 
-// //     totalPath := {current}
+        // totalPath := {current}
         var totalPath = [current];
-// //     while current in cameFrom.Keys:
-
-        //var i = cameFrom.length - 1;
-        //console.log("Pacman: " + pac.pacPos);
-        //console.log("Blinky: " + this.ghostPos)
+        // while current in cameFrom.Keys:
         while(current.xPos != this.ghostPos[0] || current.yPos != this.ghostPos[1])
         {
             totalPath.push(current.nodeCameFrom);
             //console.log(totalPath);
             current = current.nodeCameFrom;
-            console.log(current);
+            //console.log(current);
         }
-        //console.log(totalPath);
-            /*//console.log(cameFrom[i]+ ', ' + current);
-            if(cameFrom[i].nodeCameFrom.xPos == current.xPos && cameFrom[i].nodeCameFrom.yPos == current.yPos)
-            {
-                totalPath.splice(0, 0, cameFrom[i]);
-                //console.log("path is longer.");
-                current = cameFrom[i].nodeCameFrom;
-                cameFrom.slice(i, 1);
-                i = cameFrom.length - 1;
-            }
-            i--;
-        }*/  
-// //         current := cameFrom[current]
-// //         totalPath.append(current)
-//             totalPath.push(current);
-//         }
         return totalPath
     }
 
     this.aStar = function(goToX, goToY)
     {
-        //         function A*(start, goal)
-//     // The set of nodes already evaluated
-//     closedSet := {}
+        // function A*(start, goal)
+        // The set of nodes already evaluated
+        // closedSet := {}
         var closedSet = [];
 
         //     // The set of currently discovered nodes that are not evaluated yet.
@@ -379,18 +359,18 @@ function Ghost(x, y, dx, dy)
         firstNode.gScore = 0;
         openSet.push(firstNode);
 
-//     // For each node, which node it can most efficiently be reached from.
-//     // If a node can be reached from many nodes, cameFrom will eventually contain the
-//     // most efficient previous step.
-//     cameFrom := an empty map
+        // For each node, which node it can most efficiently be reached from.
+        // If a node can be reached from many nodes, cameFrom will eventually contain the
+        // most efficient previous step.
+        // cameFrom := an empty map
         var cameFrom = [];
 
-//     // For each node, the total cost of getting from the start node to the goal
-//     // by passing by that node. That value is partly known, partly heuristic.
+        // For each node, the total cost of getting from the start node to the goal
+        // by passing by that node. That value is partly known, partly heuristic.
 
 
 
-//     while openSet is not empty
+        // while openSet is not empty
         var lowest = firstNode.fScore;
         var saveNum = 0;
         var current;
@@ -398,7 +378,7 @@ function Ghost(x, y, dx, dy)
 
         while(openSet.length != 0)
         {
-//         current := the node in openSet having the lowest fScore[] value
+            // current := the node in openSet having the lowest fScore[] value
             var lowest = firstNode.fScore;
             var saveNum = 0;
             for(var i = 0; i < openSet.length; i++)
@@ -411,10 +391,10 @@ function Ghost(x, y, dx, dy)
             }
 
             current = openSet[saveNum];
-//         if current = goal
+            // if current = goal
             if(openSet[saveNum].xPos == goToX && openSet[saveNum].yPos == goToY)
             {
-//             return reconstructPath(cameFrom, current)
+                // return reconstructPath(cameFrom, current)
                 return this.reconstructPath(goToX, goToY, current);
                 //return cameFrom;
             }
@@ -435,7 +415,7 @@ function Ghost(x, y, dx, dy)
             }
 
             // if neighbor in closedSet
-//                 continue, take neighbor out        // Ignore the neighbor which is already evaluated.
+            // continue, take neighbor out        // Ignore the neighbor which is already evaluated.
             for(var i = 0; i < closedSet.length; i++)
             {
                 for(var j = 0; j < neighbors.length; j++)
@@ -446,45 +426,35 @@ function Ghost(x, y, dx, dy)
                     }
                 }
             }
-//         openSet.Remove(current)
+            // openSet.Remove(current)
             closedSet.push(openSet[saveNum]);
             openSet.splice(saveNum, 1);
-//         closedSet.Add(current)
-//         for each neighbor of current
+            // closedSet.Add(current)
+            // for each neighbor of current
 
             for(var i = 0; i < neighbors.length; i++)
             {
-//             
-
-//             if neighbor not in openSet  // Discover a new node
-//                 openSet.Add(neighbor)
+                // if neighbor not in openSet  // Discover a new node
+                // openSet.Add(neighbor)
                 openSet.push(new this.makeNode(neighbors[i][0], neighbors[i][1], current));
             
-//             // The distance from start to a neighbor
-//             //the "dist_between" function may vary as per the solution requirements.
-//             tentative_gScore := gScore[current] + dist_between(current, neighbor)
+                // The distance from start to a neighbor
+                //the "dist_between" function may vary as per the solution requirements.
+                // tentative_gScore := gScore[current] + dist_between(current, neighbor)
                 var tentative_gScore = current.gScore + this.distance(current.xPos, current.yPos, neighbors[i][0], neighbors[i][1]);
                 //console.log(tentative_gScore + ', ' + openSet[openSet.length - 1].gScore)
-//             if tentative_gScore >= gScore[neighbor]
+                // if tentative_gScore >= gScore[neighbor]
                 if(tentative_gScore < openSet[openSet.length - 1].gScore)
                 {
-//                 // This path is the best until now. Record it!
-//             cameFrom[neighbor] := current
-//             gScore[neighbor] := tentative_gScore
-
-//             fScore[neighbor] := gScore[neighbor] + heuristic_cost_estimate(neighbor, goal) 
+                    // This path is the best until now. Record it!
+                    // cameFrom[neighbor] := current
+                    // gScore[neighbor] := tentative_gScore
+                    // fScore[neighbor] := gScore[neighbor] + heuristic_cost_estimate(neighbor, goal) 
                     cameFrom.push(current);
                     openSet[openSet.length - 1].gScore = tentative_gScore;
                     openSet[openSet.length - 1].fScore = tentative_gScore + this.distance(neighbors[i][0], neighbors[i][1], goToX, goToY);
-
                 }
-//             
             }
-            //console.log(cameFrom);
-//     return failure
-
-
-
         }
     }
 
@@ -493,30 +463,13 @@ function Ghost(x, y, dx, dy)
     {
         
         // Going to attempt A* Pathing Algorithm now!
-        /*if(ct == Math.round(tileSize/2))
+        if(ct == Math.round(tileSize/2) || this.path.length == 0)
         {
             this.path = this.aStar(pac.pacPos[0], pac.pacPos[1]);
-            //console.log("updating path");
-            //console.log(this.path);
-        }
-        else
-        {
-            this.x = this.path[this.path.length - 1].xPos * tileSize;
-            this.y = this.path[this.path.length - 1].yPos * tileSize;
             this.path.pop();
-            
-        }*/
-        if(ct == Math.round(tileSize/2))
-        {
-            this.path = this.aStar(pac.pacPos[0], pac.pacPos[1]);
-            //console.log("updating path");
-            this.path.pop();
-            //console.log(this.path);
         }
-        else if(ct != Math.round(tileSize/2) && this.path[this.path.length - 1].xPos != undefined && this.path[this.path.length - 1].yPos != undefined)
+        else if(ct != Math.round(tileSize/2)/* && this.path[this.path.length - 1].xPos != undefined && this.path[this.path.length - 1].yPos != undefined*/)
         {
-            //console.log("this.path: " + this.path[this.path.length - 1].xPos + ', ' + this.path[this.path.length - 1].yPos);
-            //console.log(this.path[this.path.length - 1]);
             if(this.path[this.path.length - 1].xPos * tileSize > this.x)
             {
                 this.x++;
@@ -536,100 +489,9 @@ function Ghost(x, y, dx, dy)
             if(this.path[this.path.length - 1].yPos * tileSize == this.y && this.path[this.path.length - 1].xPos * tileSize == this.x)
             {
                 this.path.pop();
-                //console.log("made it pop: " + this.path);
             }
         }
 
-
-        //This is the movement where the ghost can break through walls and is just trying to get to Pac-Man
-        /*if((pac.x - tileSize / 2 + 1) - this.x > 0)
-        {
-            this.x++;
-        }
-        else
-        {
-            this.x--;
-        }
-        if((pac.y - tileSize / 2 + 1) - this.y > 0)
-        {
-            this.y++;
-        }
-        else
-        {
-            this.y--;
-        }
-        this.draw();
-        this.ghostPos = [this.getThisPos(this.x), this.getThisPos(this.y)]; */
-
-        
-
-        /*var pacDirection = [(pac.x - tileSize / 2) - this.x, (pac.y - tileSize / 2) - this.y];
-        if(this.y % tileSize == 0)
-        {
-            if(this.x % tileSize == 0)
-            {
-                if(pacDirection[0] > 0)
-                {
-                    if (map.getTileId(this.ghostPos[1], this.ghostPos[0] + 1) == 10 
-                        || map.getTileId(this.ghostPos[1], this.ghostPos[0] + 1) == 99)
-                    {
-                        this.x += this.dx;
-                    }
-                }
-                else if(pacDirection[0] < 0)
-                {
-                    if(map.getTileId(this.ghostPos[1], this.ghostPos[0] - 1) == 10 
-                        || map.getTileId(this.ghostPos[1], this.ghostPos[0] - 1) == 99)
-                    {
-                        this.x -= this.dx;
-                    }
-                }
-            }
-            else
-            {
-                if(pacDirection[0] > 0)
-                {
-                    this.x += this.dx;
-                }
-                else
-                {
-                    this.x -= this.dx;
-                }
-            }
-        }
-        if(this.x % tileSize == 0)
-        {
-            if(this.y % tileSize == 0)
-            {
-                if(pacDirection[1] > 0)
-                {
-                    if(map.getTileId(this.ghostPos[1] + 1, this.ghostPos[0]) == 10 
-                        || map.getTileId(this.ghostPos[1] + 1, this.ghostPos[0]) == 99)
-                    {
-                        this.y += this.dy;
-                    }
-                }
-                else if(pacDirection[1] < 0) 
-                {
-                    if(map.getTileId(this.ghostPos[1] - 1, this.ghostPos[0]) == 10 
-                        || map.getTileId(this.ghostPos[1] - 1, this.ghostPos[0]) == 99)
-                    {
-                        this.y -= this.dy;
-                    }
-                }
-            }
-            else
-            {
-                if(pacDirection[1] > 0)
-                {
-                    this.y += dy;
-                }
-                else
-                {
-                    this.y -= dy;
-                }
-            }
-        }*/
         this.draw();
         this.ghostPos = [this.getThisPos(this.x), this.getThisPos(this.y)];
     }
@@ -910,14 +772,14 @@ function animate()
     }
     pac.update();
     blinky.update(aStarCt);
-    // if(aStarCt == Math.round(tileSize / 2))
-    // {
-    //     aStarCt = 0;
-    // }
-    // else
-    // {
-    //     aStarCt++;
-    // }
+    if(aStarCt == Math.round(tileSize / 2))
+    {
+        aStarCt = 0;
+    }
+    else
+    {
+        aStarCt++;
+    }
     
 	
     gameLogicUpdate();
